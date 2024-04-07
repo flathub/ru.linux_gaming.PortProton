@@ -20,7 +20,6 @@ finish-args:
   - --allow=bluetooth
   # For Wine crash handling
   - --allow=devel
-  - --filesystem=~/.local/share/applications:create
   # Wine uses UDisks2 to enumerate disk drives
   - --system-talk-name=org.freedesktop.UDisks2
   - --system-talk-name=org.freedesktop.NetworkManager
