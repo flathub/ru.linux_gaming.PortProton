@@ -116,26 +116,25 @@ cleanup:
   - /share/gtk-doc
   - /share/man
   - /share/pkgconfig
-  - "*.la"
-  - "*.a"
-  - "*.pod"
-    
+  - '*.la'
+  - '*.a'
+  - '*.pod'
 modules:
 
   - name: yad
     config-opts:
-        - --enable-standalone
-        - --disable-icon-browser
-        - --disable-tools
+      - --enable-standalone
+      - --disable-icon-browser
+      - --disable-tools
     sources:
-        - type: archive
-          url: https://github.com/v1cont/yad/releases/download/v13.0/yad-13.0.tar.xz
-          sha256: 194198c4a58e20ceffd9a3206633c3726d962d7d4219edb77aeb748897403e34
-          x-checker-data:
-            type: anitya
-            project-id: 5280
-            stable-only: true
-            url-template: https://github.com/v1cont/yad/releases/download/v$version/yad-$version.tar.xz
+      - type: archive
+        url: https://github.com/v1cont/yad/releases/download/v13.0/yad-13.0.tar.xz
+        sha256: 194198c4a58e20ceffd9a3206633c3726d962d7d4219edb77aeb748897403e34
+        x-checker-data:
+          type: anitya
+          project-id: 5280
+          stable-only: true
+          url-template: https://github.com/v1cont/yad/releases/download/v$version/yad-$version.tar.xz
     modules:
       - shared-modules/intltool/intltool-0.51.json
 
@@ -149,23 +148,23 @@ modules:
         make install
     cleanup:
         # Don't mask CLI tools provided by runtime - we just want the versioned shared library
-        - /bin
+      - /bin
         # Don't mask unversion library symlinks from library
-        - /lib/libcrypto.so
-        - /lib/libssl.so
+      - /lib/libcrypto.so
+      - /lib/libssl.so
     sources:
       - type: archive
         url: https://www.openssl.org/source/openssl-1.1.1w.tar.gz
         sha256: cf3098950cb4d853ad95c0841f1f9c6d3dc102dccfcacd521d93925208b76ac8
         x-checker-data:
-            type: anitya
-            project-id: 20333
-            url-template: https://www.openssl.org/source/openssl-$version.tar.gz
+          type: anitya
+          project-id: 20333
+          url-template: https://www.openssl.org/source/openssl-$version.tar.gz
 
   - name: libxmu
-    config-opts: &libxmu_config_opts
+    config-opts:
       - --disable-static
-    sources: &libxmu_sources
+    sources:
       - type: archive
         url: https://xorg.freedesktop.org/releases/individual/lib/libXmu-1.1.3.tar.bz2
         sha512: 8c6cc65b22aa031ad870dd92736681a068a0878a425a53dbed909943da1136c4a24034d467cfd3785c3a8d78f66850b69f1ebe1eb24aaf9bc176b1d171a5c762
@@ -196,8 +195,8 @@ modules:
     buildsystem: autotools
     sources:
       - type: archive
-        url: https://xorg.freedesktop.org/releases/individual/lib/libXaw-1.0.15.tar.gz
-        sha256: ca8a613884c922985202075b3cc8ee8821bfa83a5eb066189ae3cca131e63972
+        url: https://xorg.freedesktop.org/releases/individual/lib/libXaw-1.0.16.tar.gz
+        sha256: 012f90adf8739f2f023d63a5fee1528949cf2aba92ef7ac1abcfc2ae9cf28798
         x-checker-data:
           type: anitya
           project-id: 1766
@@ -212,7 +211,7 @@ modules:
     sources: &gamemode_sources
       - type: git
         url: https://github.com/FeralInteractive/gamemode.git
-        tag: '1.8.1'
+        tag: 1.8.1
         commit: 5180d89e66830d87f69687b95fb86f622552b94b
         x-checker-data:
           type: git
@@ -230,7 +229,6 @@ modules:
     build-commands:
       - install -Dm755 data/gamemoderun -t /app/bin
     sources: *gamemode_sources
-                
   - name: desktop-file-utils
     buildsystem: meson
     sources:
@@ -287,8 +285,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/ImageMagick/ImageMagick
-        tag: 7.1.1-23
-        commit: 54b13e91d262b1083e27fc8c02532c89d3ff649c
+        tag: 7.1.1-29
+        commit: 0deac72ed480ac2ec8e9d766c15ddb3bca055952
         x-checker-data:
           type: git
           tag-pattern: ^([\d.]+-[\d]+)$
@@ -346,7 +344,7 @@ modules:
         sha256: 26cecc47706b091908f7f814bddb074c61beb8063318e9efc5a7f789857793d6
         x-checker-data:
           type: html
-          url:  &wine-addons-url >-
+          url: &wine-addons-url >-
             https://source.winehq.org/git/wine.git/blob_plain/refs/heads/stable:/dlls/appwiz.cpl/addons.c
           version-pattern: &wine-gecko-version-pattern >-
             GECKO_VERSION\s+"(\d[\d\.]+\d)"
