@@ -35,16 +35,6 @@ finish-args:
   - --env=GST_PLUGIN_SYSTEM_PATH=/app/lib/gstreamer-1.0:/usr/lib/x86_64-linux-gnu/gstreamer-1.0:/app/lib32/gstreamer-1.0:/usr/lib/i386-linux-gnu/gstreamer-1.0
   - --talk-name=org.freedesktop.Notifications
   - --talk-name=org.kde.StatusNotifierWatcher
- # Copy some args from Steam Flatpak to make the environment similar
- # to Proton apps running under Steam Flatpak.
-  - --env=LC_ADDRESS=C
-  - --env=LC_COLLATE=C
-  - --env=LC_MONETARY=C
-  - --env=LC_MEASUREMENT=C
-  - --env=LC_NAME=C
-  - --env=LC_NUMERIC=C
-  - --env=LC_TELEPHONE=C
-  - --env=XDG_CONFIG_DIRS=/etc/xdg:/usr/lib/x86_64-linux-gnu/GL:/usr/lib/i386-linux-gnu/GL
   - --allow=per-app-dev-shm
 
 add-extensions:
