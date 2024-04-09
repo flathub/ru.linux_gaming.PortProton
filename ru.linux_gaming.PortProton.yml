@@ -24,7 +24,7 @@ finish-args:
   - --system-talk-name=org.freedesktop.NetworkManager
   - --filesystem=xdg-run/gamescope-0:ro
   - --filesystem=xdg-run/pipewire-0:ro
-   - --filesystem=~/.config/MangoHud:ro
+  - --filesystem=~/.config/MangoHud:ro
   - --filesystem=host
   # ENV
   - --env=PATH=/app/bin:/usr/bin:/app/utils/bin:/usr/lib/extensions/vulkan/MangoHud/bin/:/usr/lib/extensions/vulkan/gamescope/bin:/usr/lib/extensions/vulkan/OBSVkCapture/bin
