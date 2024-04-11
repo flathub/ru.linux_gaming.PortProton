@@ -24,7 +24,7 @@ finish-args:
   - --system-talk-name=org.freedesktop.NetworkManager
   - --filesystem=xdg-run/gamescope-0:ro
   - --filesystem=xdg-run/pipewire-0:ro
-   - --filesystem=~/.config/MangoHud:ro
+  - --filesystem=~/.config/MangoHud:ro
   - --filesystem=host
   # ENV
   - --env=PATH=/app/bin:/usr/bin:/app/utils/bin:/usr/lib/extensions/vulkan/MangoHud/bin/:/usr/lib/extensions/vulkan/gamescope/bin:/usr/lib/extensions/vulkan/OBSVkCapture/bin
@@ -80,6 +80,18 @@ add-extensions:
     add-ld-path: lib
     download-if: have-intel-gpu
     autoprune-unless: have-intel-gpu
+
+  org.freedesktop.Platform.ffmpeg-full:
+    directory: lib/ffmpeg
+    add-ld-path: .
+    version: *runtime-version
+    autodelete: false
+
+  org.freedesktop.Platform.ffmpeg_full.i386:
+    directory: lib32/ffmpeg
+    add-ld-path: .
+    version: *runtime-version
+    autodelete: false
 
 x-compat-i386-opts: &compat_i386_opts
   prepend-pkg-config-path: /app/lib32/pkgconfig:/usr/lib/i386-linux-gnu/pkgconfig
@@ -353,16 +365,14 @@ modules:
       - cp -a wine-mono-* ${FLATPAK_DEST}/share/wine/mono/
     sources:
       - type: archive
-        url: https://dl.winehq.org/wine/wine-mono/9.0.0/wine-mono-9.0.0-x86.tar.xz
+        url: https://dl.winehq.org/wine/wine-mono/8.1.0/wine-mono-8.1.0-x86.tar.xz
         strip-components: 0
-        sha256: d73d440c08ebd67c93fbd6534f4f1b4e98aa07342f9c7d98c8aaeb74755eb9cf
+        sha256: 4e3e8a40729e4c9e3e9e651cebe4f1aed8f9a4d22e991e6cd24608687f0eedd4
         x-checker-data:
           type: html
           url: *wine-addons-url
           version-pattern: MONO_VERSION\s+"(\d[\d\.]+\d)"
           url-template: https://dl.winehq.org/wine/wine-mono/$version/wine-mono-$version-x86.tar.xz
-
-# -- controllers --
 
   - name: hwdata
     config-opts:
@@ -370,8 +380,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/vcrhonek/hwdata
-        tag: v0.380
-        commit: d0cbfddb1fec4bb1a395373396c972e5f210bcf8
+        tag: v0.381
+        commit: 4463530857af32d9dbfcfa9939c2304b51e5e58d
         x-checker-data:
           type: json
           url: https://api.github.com/repos/vcrhonek/hwdata/releases/latest
@@ -399,8 +409,8 @@ modules:
   - name: libusb
     sources: &libusb_sources
       - type: archive
-        url: https://github.com/libusb/libusb/releases/download/v1.0.26/libusb-1.0.26.tar.bz2
-        sha256: 12ce7a61fc9854d1d2a1ffe095f7b5fac19ddba095c259e6067a46500381b5a5
+        url: https://github.com/libusb/libusb/releases/download/v1.0.27/libusb-1.0.27.tar.bz2
+        sha256: ffaa41d741a8a3bee244ac8e54a72ea05bf2879663c098c82fc5757853441575
         x-checker-data:
           type: json
           url: https://api.github.com/repos/libusb/libusb/releases/latest
@@ -457,8 +467,6 @@ modules:
           url: https://api.github.com/repos/lsof-org/lsof/releases/latest
           tag-query: .tag_name
 
-# -- end controllers --
-
   - name: platform-bootstrap
     buildsystem: simple
     build-commands:
@@ -466,6 +474,8 @@ modules:
         set -e
         mkdir -p /app/bin
         mkdir -p /app/utils
+        mkdir -p /app/lib/ffmpeg
+        mkdir -p /app/lib32/ffmpeg
         mkdir -p /app/lib/i386-linux-gnu
         mkdir -p /app/lib/i386-linux-gnu/GL
         mkdir -p /app/lib/debug/lib/i386-linux-gnu
