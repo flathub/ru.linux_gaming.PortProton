@@ -39,11 +39,11 @@ finish-args:
 
 add-extensions:
 
-  org.freedesktop.Platform.Compat.i386:
+  org.gnome.Platform.Compat.i386:
     directory: lib/i386-linux-gnu
     version: *runtime-version
 
-  org.freedesktop.Platform.Compat.i386.Debug:
+  org.gnome.Platform.Compat.i386.Debug:
     directory: lib/debug/lib/i386-linux-gnu
     version: *runtime-version
     no-autodownload: true
