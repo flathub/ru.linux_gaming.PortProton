@@ -1,7 +1,7 @@
 app-id: ru.linux_gaming.PortProton
-sdk: org.freedesktop.Sdk
-runtime: org.freedesktop.Platform
-runtime-version: &runtime-version '23.08'
+sdk: org.gnome.Sdk
+runtime: org.gnome.Platform
+runtime-version: &runtime-version '45'
 x-gl-version: &gl-version '1.4'
 x-gl-versions: &gl-versions 23.08;1.4
 x-gl-merge-dirs: &gl-merge-dirs vulkan/icd.d;glvnd/egl_vendor.d;egl/egl_external_platform.d;OpenCL/vendors;lib/dri;lib/d3d;lib/gbm;vulkan/explicit_layer.d;vulkan/implicit_layer.d
@@ -103,7 +103,7 @@ x-compat-i386-opts: &compat_i386_opts
   libdir: /app/lib32
 
 sdk-extensions:
-  - org.freedesktop.Sdk.Compat.i386
+  - org.gnome.Sdk.Compat.i386
   - org.freedesktop.Sdk.Extension.toolchain-i386
 
 cleanup:
@@ -135,29 +135,6 @@ modules:
           url-template: https://github.com/v1cont/yad/releases/download/v$version/yad-$version.tar.xz
     modules:
       - shared-modules/intltool/intltool-0.51.json
-
-  - name: openssl-1.1
-    buildsystem: simple
-    build-commands:
-      - |
-        set -e
-        ./config --prefix=/app
-        make
-        make install
-    cleanup:
-        # Don't mask CLI tools provided by runtime - we just want the versioned shared library
-      - /bin
-        # Don't mask unversion library symlinks from library
-      - /lib/libcrypto.so
-      - /lib/libssl.so
-    sources:
-      - type: archive
-        url: https://www.openssl.org/source/openssl-1.1.1w.tar.gz
-        sha256: cf3098950cb4d853ad95c0841f1f9c6d3dc102dccfcacd521d93925208b76ac8
-        x-checker-data:
-          type: anitya
-          project-id: 20333
-          url-template: https://www.openssl.org/source/openssl-$version.tar.gz
 
   - name: libxmu
     config-opts:
