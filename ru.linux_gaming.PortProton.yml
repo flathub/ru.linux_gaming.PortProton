@@ -136,6 +136,21 @@ modules:
     modules:
       - shared-modules/intltool/intltool-0.51.json
 
+
+  # Needed by gst-plugins-good
+  - shared-modules/libsoup/libsoup-2.4.json
+
+  - name: gstreamer
+    config-opts:
+      - -Ddoc=disabled
+      - -Dexamples=disabled
+      - -Dgtk_doc=disabled
+    buildsystem: meson
+    sources:
+      - type: git
+        tag: 1.22.8
+        url: https://github.com/GStreamer/gstreamer.git
+
   - name: openssl-1.1
     buildsystem: simple
     build-commands:
