@@ -19,12 +19,13 @@ finish-args:
   - --allow=bluetooth
   # For Wine crash handling
   - --allow=devel
+  # For wine mono and gecko work
+  - --allow=per-app-dev-shm
   # Wine uses UDisks2 to enumerate disk drives
   - --system-talk-name=org.freedesktop.UDisks2
   - --system-talk-name=org.freedesktop.NetworkManager
   - --filesystem=xdg-run/gamescope-0:ro
   - --filesystem=xdg-run/pipewire-0:ro
-  - --filesystem=~/.config/MangoHud:ro
   - --filesystem=host
   # ENV
   - --env=PATH=/app/bin:/usr/bin:/app/utils/bin:/usr/lib/extensions/vulkan/MangoHud/bin/:/usr/lib/extensions/vulkan/gamescope/bin:/usr/lib/extensions/vulkan/OBSVkCapture/bin
@@ -33,9 +34,7 @@ finish-args:
   # See: https://github.com/flathub/net.lutris.Lutris/pull/368#issuecomment-1751381312
   - --env=WEBKIT_DISABLE_DMABUF_RENDERER=1
   - --env=GST_PLUGIN_SYSTEM_PATH=/app/lib/gstreamer-1.0:/usr/lib/x86_64-linux-gnu/gstreamer-1.0:/app/lib32/gstreamer-1.0:/usr/lib/i386-linux-gnu/gstreamer-1.0
-  - --talk-name=org.freedesktop.Notifications
   - --talk-name=org.kde.StatusNotifierWatcher
-  - --allow=per-app-dev-shm
 
 add-extensions:
 
@@ -135,38 +134,46 @@ modules:
           url-template: https://github.com/v1cont/yad/releases/download/v$version/yad-$version.tar.xz
     modules:
       - shared-modules/intltool/intltool-0.51.json
+      - shared-modules/lzo/lzo.json
 
-  - name: libnotify
+  - name: zstd
     buildsystem: meson
-    config-opts:
-      - -Dtests=false
-      - -Dintrospection=disabled
-      - -Dman=false
-      - -Dgtk_doc=false
-      - -Ddocbook_docs=disabled
+    builddir: true
+    subdir: build/meson
     sources:
       - type: archive
-        url: https://download.gnome.org/sources/libnotify/0.8/libnotify-0.8.3.tar.xz
-        sha256: ee8f3ef946156ad3406fdf45feedbdcd932dbd211ab4f16f75eba4f36fb2f6c0
+        url: https://github.com/facebook/zstd/releases/download/v1.5.5/zstd-1.5.5.tar.gz
+        sha256: 9c4396cc829cfae319a6e2615202e82aad41372073482fce286fac78646d3ee4
         x-checker-data:
-          type: gnome
-          name: libnotify
-          stable-only: true
-      - type: archive
-        url: https://download.gnome.org/sources/gnome-common/3.18/gnome-common-3.18.0.tar.xz
-        sha256: 22569e370ae755e04527b76328befc4c73b62bfd4a572499fde116b8318af8cf
-        x-checker-data:
-          type: gnome
-          name: gnome-common
-          stable-only: true
+          type: anitya
+          project-id: 12083
+          url-template: https://github.com/facebook/zstd/releases/download/v$version/zstd-$version.tar.gz
 
-  - name: libxmu
+  - name: squashfs-tools
+    buildsystem: simple
+    build-commands:
+      - XZ_SUPPORT=1 LZO_SUPPORT=1 ZSTD_SUPPORT=1 make -C squashfs-tools -j ${FLATPAK_BUILDER_N_JOBS} install INSTALL_DIR=${FLATPAK_DEST}/bin INSTALL_MANPAGES_DIR=${FLATPAK_DEST}/man/man1
+    sources:
+      - type: git
+        url: https://github.com/plougher/squashfs-tools.git
+        tag: 4.6.1
+        commit: d8cb82d9840330f9344ec37b992595b5d7b44184
+        x-checker-data:
+          type: git
+          tag-pattern: ^([\\d.]+)$
+
+  - name: libXmu
+    buildsystem: autotools
     config-opts:
       - --disable-static
     sources:
       - type: archive
-        url: https://xorg.freedesktop.org/releases/individual/lib/libXmu-1.1.3.tar.bz2
-        sha512: 8c6cc65b22aa031ad870dd92736681a068a0878a425a53dbed909943da1136c4a24034d467cfd3785c3a8d78f66850b69f1ebe1eb24aaf9bc176b1d171a5c762
+        url: https://xorg.freedesktop.org/releases/individual/lib/libXmu-1.1.4.tar.gz
+        sha512: 34438e39c5ce88b19bba0cfc123bceb8d7bece4bcaf85f53e69647ba04de9d90d79c6b41f6e1a47b484a76d996a79666ff8e0a4c256d4051e779561d1ee62843
+        x-checker-data:
+          type: anitya
+          project-id: 1785
+          url-template: https://xorg.freedesktop.org/releases/individual/lib/libXmu-$version.tar.gz
 
   - name: xdpyinfo
     buildsystem: autotools
@@ -200,6 +207,19 @@ modules:
           type: anitya
           project-id: 1766
           url-template: https://xorg.freedesktop.org/releases/individual/lib/libXaw-$version.tar.gz
+
+  - name: xterm
+    buildsystem: autotools
+    config-opts:
+      - --disable-full-tgetent
+    sources:
+     - type: archive
+       url: https://invisible-mirror.net/archives/xterm/xterm-390.tgz
+       sha256: 75117c3cc5174a09c425ef106e69404d72f5ef05e03a5da00aaf15792d6f9c0f
+       x-checker-data:
+         type: anitya
+         project-id: 5272
+         url-template: https://invisible-mirror.net/archives/xterm/xterm-$version.tgz
 
   - name: gamemode
     buildsystem: meson
@@ -238,17 +258,6 @@ modules:
           type: anitya
           project-id: 421
           url-template: https://www.freedesktop.org/software/desktop-file-utils/releases/desktop-file-utils-$version.tar.xz
-
-  - name: icoutils
-    buildsystem: autotools
-    sources:
-      - type: archive
-        url: http://download.savannah.gnu.org/releases/icoutils/icoutils-0.32.3.tar.bz2
-        sha256: 17abe02d043a253b68b47e3af69c9fc755b895db68fdc8811786125df564c6e0
-        x-checker-data:
-          type: anitya
-          project-id: 1360
-          url-template: http://download.savannah.gnu.org/releases/icoutils/icoutils-$version.tar.bz2
 
   - name: cabextract
     sources:
@@ -328,6 +337,61 @@ modules:
       - /share
     modules:
       - shared-modules/glu/glu-9.json
+
+  - name: glew
+    no-autogen: true
+    make-args: &glew-make-args
+      - GLEW_PREFIX=${FLATPAK_DEST}
+      - GLEW_DEST=${FLATPAK_DEST}
+      - LIBDIR=${FLATPAK_DEST}/lib
+      - CFLAGS.EXTRA:=${CFLAGS} -fPIC
+      - LDFLAGS.EXTRA=${LDFLAGS}
+    make-install-args: *glew-make-args
+    sources: &glew-sources
+      - type: archive
+        url: https://downloads.sourceforge.net/project/glew/glew/2.2.0/glew-2.2.0.tgz
+        sha256: d4fc82893cfb00109578d0a1a2337fb8ca335b3ceccf97b97e5cc7f08e4353e1
+
+  - name: glew-32bit
+    build-options:
+      arch:
+        x86_64: *compat_i386_opts
+    no-autogen: true
+    make-args: *glew-make-args
+    make-install-args: *glew-make-args
+    sources: *glew-sources
+
+  - name: libNVCtrl
+    no-autogen: true
+    no-make-install: true
+    build-commands:
+      - mkdir -p ${FLATPAK_DEST}/lib
+      - cp -a libXNVCtrl.so* ${FLATPAK_DEST}/lib/
+    subdir: src/libXNVCtrl
+    sources: &libNVCtrl-sources
+      - type: archive
+        archive-type: tar
+        url: https://api.github.com/repos/NVIDIA/nvidia-settings/tarball/refs/tags/470.63.01
+        sha256: 0ede63515851d85ac0d1ed5f00e355f539968e6d1fd226120a27b2c66c3575de
+      - type: patch
+        path: patches/libxnvctrl_so_0.patch
+        x-checker-data:
+          type: json
+          url: https://api.github.com/repos/NVIDIA/nvidia-settings/tags
+          url-query: .[0].tarball_url
+          version-query: .[0].name
+
+  - name: libNVCtrl-32bit
+    build-options:
+      arch:
+        x86_64: *compat_i386_opts
+    no-autogen: true
+    no-make-install: true
+    build-commands:
+      - mkdir -p ${FLATPAK_DEST}/lib32
+      - cp -a libXNVCtrl.so* ${FLATPAK_DEST}/lib32/
+    subdir: src/libXNVCtrl
+    sources: *libNVCtrl-sources
 
   - name: wine-gecko
     buildsystem: simple
@@ -482,7 +546,6 @@ modules:
         mkdir -p /app/lib/debug/lib/i386-linux-gnu
         mkdir -p /app/lib/debug/lib/i386-linux-gnu/GL
         mkdir -p /app/lib/i386-linux-gnu/dri/intel-vaapi-driver
-        install -D portproton -t /app/bin
         install -Dm644 -t /app/etc ld.so.conf
     sources:
       - type: inline
@@ -490,8 +553,6 @@ modules:
         contents: |
           /app/lib32
           /app/lib/i386-linux-gnu
-      - type: file
-        path: portproton
 
   - name: PortProton
     buildsystem: simple
@@ -501,7 +562,10 @@ modules:
         install -Dm644 ru.linux_gaming.PortProton.svg /app/share/icons/hicolor/scalable/apps/ru.linux_gaming.PortProton.svg
         install -Dm644 ru.linux_gaming.PortProton.desktop /app/share/applications/ru.linux_gaming.PortProton.desktop
         install -Dm644 ru.linux_gaming.PortProton.metainfo.xml /app/share/metainfo/ru.linux_gaming.PortProton.metainfo.xml
+        install -D portproton -t /app/bin
     sources:
       - type: archive
         url: https://github.com/Castro-Fidel/PortProton_ALT/archive/refs/tags/v1.5.2.tar.gz
         sha256: 17926ec48ccd462bc8153b2edf696710624221c27c5f67dfe1142f72987cfd5b
+      - type: file
+        path: portproton
