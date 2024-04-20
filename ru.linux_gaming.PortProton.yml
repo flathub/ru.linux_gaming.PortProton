@@ -142,8 +142,8 @@ modules:
     subdir: build/meson
     sources:
       - type: archive
-        url: https://github.com/facebook/zstd/releases/download/v1.5.5/zstd-1.5.5.tar.gz
-        sha256: 9c4396cc829cfae319a6e2615202e82aad41372073482fce286fac78646d3ee4
+        url: https://github.com/facebook/zstd/releases/download/v1.5.6/zstd-1.5.6.tar.gz
+        sha256: 8c29e06cf42aacc1eafc4077ae2ec6c6fcb96a626157e0593d5e82a34fd403c1
         x-checker-data:
           type: anitya
           project-id: 12083
@@ -152,7 +152,8 @@ modules:
   - name: squashfs-tools
     buildsystem: simple
     build-commands:
-      - XZ_SUPPORT=1 LZO_SUPPORT=1 ZSTD_SUPPORT=1 make -C squashfs-tools -j ${FLATPAK_BUILDER_N_JOBS} install INSTALL_DIR=${FLATPAK_DEST}/bin INSTALL_MANPAGES_DIR=${FLATPAK_DEST}/man/man1
+      - XZ_SUPPORT=1 LZO_SUPPORT=1 ZSTD_SUPPORT=1 make -C squashfs-tools -j ${FLATPAK_BUILDER_N_JOBS}
+        install INSTALL_DIR=${FLATPAK_DEST}/bin INSTALL_MANPAGES_DIR=${FLATPAK_DEST}/man/man1
     sources:
       - type: git
         url: https://github.com/plougher/squashfs-tools.git
@@ -168,8 +169,8 @@ modules:
       - --disable-static
     sources:
       - type: archive
-        url: https://xorg.freedesktop.org/releases/individual/lib/libXmu-1.1.4.tar.gz
-        sha512: 34438e39c5ce88b19bba0cfc123bceb8d7bece4bcaf85f53e69647ba04de9d90d79c6b41f6e1a47b484a76d996a79666ff8e0a4c256d4051e779561d1ee62843
+        url: https://xorg.freedesktop.org/releases/individual/lib/libXmu-1.2.1.tar.gz
+        sha512: 404818db0bb75e0bbff0ef05d6203238e98c86a0ceebde1e05d72ec87cf9c7182e5aa51e9e819714e2a43642db10059f32e9ac7330a546d17c64ca860e155db9
         x-checker-data:
           type: anitya
           project-id: 1785
@@ -213,13 +214,13 @@ modules:
     config-opts:
       - --disable-full-tgetent
     sources:
-     - type: archive
-       url: https://invisible-mirror.net/archives/xterm/xterm-390.tgz
-       sha256: 75117c3cc5174a09c425ef106e69404d72f5ef05e03a5da00aaf15792d6f9c0f
-       x-checker-data:
-         type: anitya
-         project-id: 5272
-         url-template: https://invisible-mirror.net/archives/xterm/xterm-$version.tgz
+      - type: archive
+        url: https://invisible-mirror.net/archives/xterm/xterm-390.tgz
+        sha256: 75117c3cc5174a09c425ef106e69404d72f5ef05e03a5da00aaf15792d6f9c0f
+        x-checker-data:
+          type: anitya
+          project-id: 5272
+          url-template: https://invisible-mirror.net/archives/xterm/xterm-$version.tgz
 
   - name: gamemode
     buildsystem: meson
