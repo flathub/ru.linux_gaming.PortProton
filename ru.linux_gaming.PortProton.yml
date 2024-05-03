@@ -294,8 +294,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/ImageMagick/ImageMagick
-        tag: 7.1.1-30
-        commit: dd459b01fd3dba99a5190aaca458c628293de0a3
+        tag: 7.1.1-31
+        commit: 2f6d2de838390a054af74822e80d74b7799633cb
         x-checker-data:
           type: git
           tag-pattern: ^([\d.]+-[\d]+)$
@@ -446,8 +446,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/vcrhonek/hwdata
-        tag: v0.381
-        commit: 4463530857af32d9dbfcfa9939c2304b51e5e58d
+        tag: v0.382
+        commit: 94b82b56d6ee7c7ada381b3b02fecfca4ff7af1c
         x-checker-data:
           type: json
           url: https://api.github.com/repos/vcrhonek/hwdata/releases/latest
