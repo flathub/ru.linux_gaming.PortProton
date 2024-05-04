@@ -1,5 +1,6 @@
 {
     "only-arches": [
         "x86_64"
-    ]
+    ],
+    "end-of-life": "Beta branch is no longer maintained use the stable branch"
 }
