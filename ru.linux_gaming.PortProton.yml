@@ -118,6 +118,9 @@ cleanup:
   - '*.pod'
 modules:
 
+    # icoextract
+  - ru.linux_gaming.PortProton.pypi-deps.yaml
+
   - name: yad
     config-opts:
       - --enable-standalone
@@ -135,6 +138,74 @@ modules:
     modules:
       - shared-modules/intltool/intltool-0.51.json
       - shared-modules/lzo/lzo.json
+
+  # Taken from https://github.com/flathub/fr.romainvigier.MetadataCleaner/blob/74c261effe8536e33c2669b75acb340ecfff3142/fr.romainvigier.MetadataCleaner.yaml#L73
+  - name: exiftool
+    buildsystem: simple
+    build-commands:
+      - perl Makefile.PL
+      - make install
+    cleanup:
+      - '*.pod'
+    sources:
+      - type: git
+        url: https://github.com/exiftool/exiftool.git
+        tag: '12.76'
+        commit: 212f02cf22b9484674752181cad3b73089ce9694
+        x-checker-data:
+          type: git
+          tag-pattern: ^(\d+\.\d+[02468])$
+    modules:
+      - name: perl
+        buildsystem: simple
+        build-commands:
+          - ./Configure -des -Dprefix=$FLATPAK_DEST -Dman1dir=none -Dman3dir=none
+          - make
+          - make install
+        post-install:
+          # Fix wrong permissions
+          - chmod -R u+w $FLATPAK_DEST/lib/perl5
+        cleanup:
+          - /bin/corelist
+          - /bin/cpan
+          - /bin/enc2xs
+          - /bin/encguess
+          - /bin/h2ph
+          - /bin/h2xs
+          - /bin/instmodsh
+          - /bin/json_pp
+          - /bin/libnetcfg
+          - /bin/perl5*
+          - /bin/perlbug
+          - /bin/perldoc
+          - /bin/perlivp
+          - /bin/perlthanks
+          - /bin/piconv
+          - /bin/pl2pm
+          - /bin/pod2html
+          - /bin/pod2man
+          - /bin/pod2text
+          - /bin/pod2usage
+          - /bin/podchecker
+          - /bin/prove
+          - /bin/ptar
+          - /bin/ptardiff
+          - /bin/ptargrep
+          - /bin/shasum
+          - /bin/splain
+          - /bin/streamzip
+          - /bin/xsubpp
+          - /bin/zipdetails
+          - '*.pod'
+        sources:
+          - type: git
+            url: https://github.com/Perl/perl5.git
+            tag: v5.38.2
+            commit: 55dd2f792ffc8cefe614350a411f785374281b24
+            disable-fsckobjects: true
+            x-checker-data:
+              type: git
+              tag-pattern: ^v(\d+\.\d+[02468].\d+)$
 
   - name: zstd
     buildsystem: meson
@@ -517,22 +588,6 @@ modules:
           stable-only: true
           tag-template: v$version
 
-  - name: lsof
-    buildsystem: simple
-    build-commands:
-      - ./Configure -n linux
-      - make CC="cc ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
-      - install -Dm755 lsof -t /app/bin
-    sources:
-      - type: git
-        url: https://github.com/lsof-org/lsof
-        commit: 2e4c7a1a9bc7258dc5b6a3ab28ebca44174279a8
-        tag: 4.99.3
-        x-checker-data:
-          type: json
-          url: https://api.github.com/repos/lsof-org/lsof/releases/latest
-          tag-query: .tag_name
-
   - name: platform-bootstrap
     buildsystem: simple
     build-commands:
@@ -560,13 +615,15 @@ modules:
     build-commands:
       - |
         set -e
+        install -Dm755 portproton /app/bin/portproton
         install -Dm644 ru.linux_gaming.PortProton.svg /app/share/icons/hicolor/scalable/apps/ru.linux_gaming.PortProton.svg
         install -Dm644 ru.linux_gaming.PortProton.desktop /app/share/applications/ru.linux_gaming.PortProton.desktop
         install -Dm644 ru.linux_gaming.PortProton.metainfo.xml /app/share/metainfo/ru.linux_gaming.PortProton.metainfo.xml
-        install -D portproton -t /app/bin
     sources:
-      - type: archive
-        url: https://github.com/Castro-Fidel/PortProton_ALT/archive/refs/tags/v1.5.2.tar.gz
-        sha256: 17926ec48ccd462bc8153b2edf696710624221c27c5f67dfe1142f72987cfd5b
-      - type: file
-        path: portproton
+      - type: git
+        url: https://github.com/Castro-Fidel/PortProton_ALT
+        tag: v1.6.1
+        commit: 8532a121b29bf3b74c94dee6ddadf4e57ccb778e
+        x-checker-data:
+          type: git
+          tag-pattern: ^v([\\d.]+)$
