@@ -150,8 +150,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/exiftool/exiftool.git
-        tag: '12.76'
-        commit: 212f02cf22b9484674752181cad3b73089ce9694
+        tag: '12.84'
+        commit: 2b84c5baafa902e7092f2cbe8679cd904c2e183d
         x-checker-data:
           type: git
           tag-pattern: ^(\d+\.\d+[02468])$
@@ -365,8 +365,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/ImageMagick/ImageMagick
-        tag: 7.1.1-30
-        commit: dd459b01fd3dba99a5190aaca458c628293de0a3
+        tag: 7.1.1-33
+        commit: 057259c12960243cf55899ead99a6dc80d300a7b
         x-checker-data:
           type: git
           tag-pattern: ^([\d.]+-[\d]+)$
@@ -517,8 +517,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/vcrhonek/hwdata
-        tag: v0.381
-        commit: 4463530857af32d9dbfcfa9939c2304b51e5e58d
+        tag: v0.383
+        commit: 229069b51b488bc776602d82315188cd1fbf4887
         x-checker-data:
           type: json
           url: https://api.github.com/repos/vcrhonek/hwdata/releases/latest
