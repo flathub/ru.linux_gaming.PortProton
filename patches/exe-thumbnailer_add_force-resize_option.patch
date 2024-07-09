@@ -1,0 +1,159 @@
+From 312a9d44cb5ea2fa8411ee328f9c73702f029b81 Mon Sep 17 00:00:00 2001
+From: James Lu <james@overdrivenetworks.com>
+Date: Sun, 7 Jul 2024 12:24:59 -0700
+Subject: [PATCH] exe-thumbnailer: add --force-resize option
+
+Closes #23.
+
+Co-Authored-By: Boris Yumankulov <boria138@altlinux.org>
+---
+ icoextract/scripts/thumbnailer.py | 50 +++++++++++++++++--------------
+ tests/test_thumbnailer.py         | 19 +++++++-----
+ 2 files changed, 39 insertions(+), 30 deletions(-)
+
+diff --git a/icoextract/scripts/thumbnailer.py b/icoextract/scripts/thumbnailer.py
+index 719e13e..b8245cf 100755
+--- a/icoextract/scripts/thumbnailer.py
++++ b/icoextract/scripts/thumbnailer.py
+@@ -10,13 +10,13 @@
+ 
+ from icoextract import IconExtractor, logger, __version__
+ 
+-def generate_thumbnail(inputfile, outfile, large_size=True):
++def generate_thumbnail(inputfile, outfile, size=256, force_resize=False):
+     """
+     Generates a thumbnail for an .exe file.
+ 
+     inputfile: the input file path (%i)
+     outfile: output filename (%o)
+-    large_size: determines whether to write a large size (256x256) thumbnail (%s)
++    size: determines the thumbnail output size (%s)
+     """
+     try:
+         extractor = IconExtractor(inputfile)
+@@ -26,32 +26,37 @@ def generate_thumbnail(inputfile, outfile, large_size=True):
+     data = extractor.get_icon()
+ 
+     im = Image.open(data)  # Open up the .ico from memory
+-    if (256, 256) in im.info['sizes']:
+-        if large_size:
+-            # A large size thumbnail was requested
+-            logger.debug("Writing large size thumbnail for %s to %s", inputfile, outfile)
+-            im.save(outfile, "PNG")
+-            return
+-
+-        # If large size thumbnail wasn't requested but one is available, pick an 128x128 icon if available;
+-        # otherwise scale down from 256x256 to 128x128. 128x128 is the largest resolution allowed for
+-        # "normal" size thumbnails.
+-        if (128, 128) in im.info['sizes']:
+-            logger.debug("Using native 128x128 icon")
+-            im.size = (128, 128)
+-        else:
+-            logger.debug("Resizing icon from 256x256 to 128x128")
+-            im = im.resize((128, 128))
+-
+-    logger.debug("Writing normal size thumbnail for %s to %s", inputfile, outfile)
+-    im.save(outfile, "PNG")
++    if force_resize:
++        logger.debug("Force resizing icon to %dx%d", size, size)
++        im = im.resize((size, size))
++    else:
++        # Note: 256x256 is the largest size supported by the .ico format
++        if (256, 256) in im.info['sizes']:
++            if size >= 256:
++                # A large size thumbnail was requested
++                logger.debug("Writing large size thumbnail for %s to %s", inputfile, outfile)
++                im.save(outfile, "PNG")
++                return
++
++            # If large size thumbnail wasn't requested but one is available, pick an 128x128 icon if available;
++            # otherwise scale down from 256x256 to 128x128. 128x128 is the largest resolution allowed for
++            # "normal" size thumbnails.
++            if (128, 128) in im.info['sizes']:
++                logger.debug("Using native 128x128 icon")
++                im.size = (128, 128)
++            else:
++                logger.debug("Resizing icon from 256x256 to 128x128")
++                im = im.resize((128, 128))
++        logger.debug("Writing normal size thumbnail for %s to %s", inputfile, outfile)
+ 
++    im.save(outfile, "PNG")
+ 
+ def main():
+     parser = argparse.ArgumentParser(description=__doc__)
+     parser.add_argument("-V", "--version", action='version', version=f'exe-thumbnailer, part of icoextract {__version__}')
+     parser.add_argument("-s", "--size", type=int, help="size of desired thumbnail", default=256)
+     parser.add_argument("-v", "--verbose", action="store_true", help="enables debug logging")
++    parser.add_argument("-f", "--force-resize", action="store_true", help="force resize thumbnail to the specified size")
+     parser.add_argument("inputfile", help="input file name (.exe/.dll/.mun)")
+     parser.add_argument("outfile", help="output file name (.png)", nargs='?')
+     args = parser.parse_args()
+@@ -59,5 +64,4 @@ def main():
+     if args.verbose:
+         logger.setLevel(logging.DEBUG)
+ 
+-    large_size = (args.size >= 256)
+-    generate_thumbnail(args.inputfile, args.outfile, large_size)
++    generate_thumbnail(args.inputfile, args.outfile, size=args.size, force_resize=args.force_resize)
+diff --git a/tests/test_thumbnailer.py b/tests/test_thumbnailer.py
+index 1133a57..62496ed 100755
+--- a/tests/test_thumbnailer.py
++++ b/tests/test_thumbnailer.py
+@@ -1,6 +1,4 @@
+ #!/usr/bin/env python3
+-
+-import filecmp
+ import os.path
+ import unittest
+ 
+@@ -23,38 +21,45 @@ def _compare_equal(self, im, orig):
+                                 "Extracted image should match original")
+ 
+     def test_thumbnailer_normal(self):
+-        outfile = self._generate_thumbnail("testapp64.exe", "tmp-thumbnail-test-normal.png", large_size=False)
++        outfile = self._generate_thumbnail("testapp64.exe", "tmp-thumbnail-test-normal.png", size=128)
+         with Image.open(outfile) as im:
+             self.assertEqual(im.width, 128)
+             self.assertEqual(im.height, 128)
+ 
+     def test_thumbnailer_large(self):
+-        outfile = self._generate_thumbnail("testapp64.exe", "tmp-thumbnail-test-large.png", large_size=True)
++        outfile = self._generate_thumbnail("testapp64.exe", "tmp-thumbnail-test-large.png", size=256)
+         with Image.open(outfile) as im:
+             self.assertEqual(im.width, 256)
+             self.assertEqual(im.height, 256)
+             self._compare_equal(im, "testapp.png")
+ 
+     def test_thumbnailer_with128_large(self):
+-        outfile = self._generate_thumbnail("testapp64-with128.exe", "tmp-thumbnail-test-with-128-large.png", large_size=True)
++        outfile = self._generate_thumbnail("testapp64-with128.exe", "tmp-thumbnail-test-with-128-large.png", size=256)
+         with Image.open(outfile) as im:
+             self.assertEqual(im.width, 256)
+             self.assertEqual(im.height, 256)
+             self._compare_equal(im, "testapp.png")
+ 
+     def test_thumbnailer_with128_normal(self):
+-        outfile = self._generate_thumbnail("testapp64-with128.exe", "tmp-thumbnail-test-with-128-normal.png", large_size=False)
++        outfile = self._generate_thumbnail("testapp64-with128.exe", "tmp-thumbnail-test-with-128-normal.png", size=128)
+         with Image.open(outfile) as im:
+             self.assertEqual(im.width, 128)
+             self.assertEqual(im.height, 128)
+             self._compare_equal(im, "tmp-testapp-128.png")
+ 
+     def test_thumbnailer_smallonly(self):
+-        outfile = self._generate_thumbnail("testapp32-smallonly.exe", "tmp-thumbnail-test-smallonly.png", large_size=False)
++        outfile = self._generate_thumbnail("testapp32-smallonly.exe", "tmp-thumbnail-test-smallonly.png", size=128)
+         with Image.open(outfile) as im:
+             self.assertEqual(im.width, 48)
+             self.assertEqual(im.height, 48)
+             self._compare_equal(im, "tmp-testapp-48.bmp")
+ 
++    def test_thumbnailer_force_resize(self):
++        outfile = self._generate_thumbnail("testapp32-smallonly.exe", "tmp-thumbnail-force-resize.png", size=128,
++                                           force_resize=True)
++        with Image.open(outfile) as im:
++            self.assertEqual(im.width, 128)
++            self.assertEqual(im.height, 128)
++
+ if __name__ == '__main__':
+     unittest.main()

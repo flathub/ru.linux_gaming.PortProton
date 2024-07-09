@@ -3,16 +3,30 @@ name: python3-package-installation
 buildsystem: simple
 build-commands:
 - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
-  --prefix=${FLATPAK_DEST} --no-build-isolation icoextract pefile pillow
+  --prefix=${FLATPAK_DEST} --no-build-isolation pefile pillow
 sources:
-- type: file
-  url: https://files.pythonhosted.org/packages/06/72/f18254001f25ba1533b191d8f1648f6f6374f2d5dcb14042be5998d07f4d/icoextract-0.1.5.tar.gz
-  sha256: fd4c6758dc9136dc08e11c71f7b8b94328de32b52be52abe4df2d3994d315b27
 - type: file
   url: https://files.pythonhosted.org/packages/55/26/d0ad8b448476d0a1e8d3ea5622dc77b916db84c6aa3cb1e1c0965af948fc/pefile-2023.2.7-py3-none-any.whl
   sha256: da185cd2af68c08a6cd4481f7325ed600a88f6a813bad9dea07ab3ef73d8d8d6
 - type: file
   url: https://files.pythonhosted.org/packages/81/ff/ad3c942d865f9e45ce84eeb31795e6d4d94e1f1eea51026d5154028510d7/pillow-10.3.0-cp311-cp311-manylinux_2_28_x86_64.whl
   sha256: 1b87bd9d81d179bd8ab871603bd80d8645729939f90b71e62914e816a76fc6bd
+  only-arches:
+  - x86_64
+
+name: python3-package-icoextract
+buildsystem: simple
+build-commands:
+- pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
+  --prefix=${FLATPAK_DEST} --no-build-isolation icoextract
+subdir: icoextract-0.1.5
+sources:
+- type: file
+  url: https://files.pythonhosted.org/packages/06/72/f18254001f25ba1533b191d8f1648f6f6374f2d5dcb14042be5998d07f4d/icoextract-0.1.5.tar.gz
+  sha256: fd4c6758dc9136dc08e11c71f7b8b94328de32b52be52abe4df2d3994d315b27
+- type: patch
+  path: patches/exe-thumbnailer_add_force-resize_option.patch
+- type: patch
+  path: patches/exe-thumbnailer_rework_icon_size_calculation.patch
   only-arches:
   - x86_64
