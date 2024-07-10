@@ -3,11 +3,8 @@ name: python3-package-installation
 buildsystem: simple
 build-commands:
 - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
-  --prefix=${FLATPAK_DEST} --no-build-isolation icoextract pefile pillow
+  --prefix=${FLATPAK_DEST} --no-build-isolation pefile pillow
 sources:
-- type: file
-  url: https://files.pythonhosted.org/packages/06/72/f18254001f25ba1533b191d8f1648f6f6374f2d5dcb14042be5998d07f4d/icoextract-0.1.5.tar.gz
-  sha256: fd4c6758dc9136dc08e11c71f7b8b94328de32b52be52abe4df2d3994d315b27
 - type: file
   url: https://files.pythonhosted.org/packages/55/26/d0ad8b448476d0a1e8d3ea5622dc77b916db84c6aa3cb1e1c0965af948fc/pefile-2023.2.7-py3-none-any.whl
   sha256: da185cd2af68c08a6cd4481f7325ed600a88f6a813bad9dea07ab3ef73d8d8d6

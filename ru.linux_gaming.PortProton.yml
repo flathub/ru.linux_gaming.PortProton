@@ -118,8 +118,18 @@ cleanup:
   - '*.pod'
 modules:
 
-    # icoextract
+    # icoextract dependency
   - ru.linux_gaming.PortProton.pypi-deps.yaml
+
+  - name: icoextract
+    buildsystem: simple
+    build-commands:
+      - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
+        --prefix=${FLATPAK_DEST} --no-build-isolation .
+    sources:
+      - type: git
+        url: https://github.com/jlu5/icoextract
+        commit: 60f8df760314aa9568126ed9f03f173bd4bb1963
 
   - name: yad
     config-opts:
@@ -355,21 +365,6 @@ modules:
         x-checker-data:
           type: git
           tag-pattern: ^sdk-([\d.]+)$
-
-  - name: ImageMagick
-    config-opts:
-      - --disable-static
-      - --disable-docs
-      - --with-hdri
-      - --with-pic
-    sources:
-      - type: git
-        url: https://github.com/ImageMagick/ImageMagick
-        tag: 7.1.1-30
-        commit: dd459b01fd3dba99a5190aaca458c628293de0a3
-        x-checker-data:
-          type: git
-          tag-pattern: ^([\d.]+-[\d]+)$
 
   - name: xrandr
     sources:
