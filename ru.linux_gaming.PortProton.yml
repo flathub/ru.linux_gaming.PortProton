@@ -174,8 +174,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/exiftool/exiftool.git
-        tag: '12.76'
-        commit: 212f02cf22b9484674752181cad3b73089ce9694
+        tag: '12.88'
+        commit: de702162a10a5a16ca74adb72a7438977fcd01aa
         x-checker-data:
           type: git
           tag-pattern: ^(\d+\.\d+[02468])$
@@ -224,8 +224,8 @@ modules:
         sources:
           - type: git
             url: https://github.com/Perl/perl5.git
-            tag: v5.38.2
-            commit: 55dd2f792ffc8cefe614350a411f785374281b24
+            tag: v5.40.0
+            commit: f22a16ecf4821b7e93d2569f630817a2631fddd9
             disable-fsckobjects: true
             x-checker-data:
               type: git
@@ -389,8 +389,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/ImageMagick/ImageMagick
-        tag: 7.1.1-30
-        commit: dd459b01fd3dba99a5190aaca458c628293de0a3
+        tag: 7.1.1-35
+        commit: d775d2ac6fc0ca1790ec9a248b34b8c3bd391566
         x-checker-data:
           type: git
           tag-pattern: ^([\d.]+-[\d]+)$
@@ -541,8 +541,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/vcrhonek/hwdata
-        tag: v0.381
-        commit: 4463530857af32d9dbfcfa9939c2304b51e5e58d
+        tag: v0.384
+        commit: 30da6d148d996a5fbc43a9e27f5b325558b600bd
         x-checker-data:
           type: json
           url: https://api.github.com/repos/vcrhonek/hwdata/releases/latest
