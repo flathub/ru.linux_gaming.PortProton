@@ -137,7 +137,7 @@ modules:
     buildsystem: autotools
     sources:
       - type: archive
-        url: https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-1.7.1.tar.gz
+        url: https://github.com/stedolan/jq/releases/download/jq-1.7.1/jq-1.7.1.tar.gz
         sha256: 478c9ca129fd2e3443fe27314b455e211e0d8c60bc8ff7df703873deeee580c2
         x-checker-data:
           type: anitya
@@ -152,8 +152,8 @@ modules:
       - --disable-tools
     sources:
       - type: archive
-        url: https://github.com/v1cont/yad/releases/download/v13.0/yad-13.0.tar.xz
-        sha256: 194198c4a58e20ceffd9a3206633c3726d962d7d4219edb77aeb748897403e34
+        url: https://github.com/v1cont/yad/releases/download/v14.1/yad-14.1.tar.xz
+        sha256: dde047a915cd8d3892c32b6ba031876f5cda673e01882c99613f043867c88133
         x-checker-data:
           type: anitya
           project-id: 5280
@@ -174,8 +174,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/exiftool/exiftool.git
-        tag: '12.76'
-        commit: 212f02cf22b9484674752181cad3b73089ce9694
+        tag: '12.90'
+        commit: c3212b20e78e7a882bae5c61df84a0b2e731ab75
         x-checker-data:
           type: git
           tag-pattern: ^(\d+\.\d+[02468])$
@@ -224,8 +224,8 @@ modules:
         sources:
           - type: git
             url: https://github.com/Perl/perl5.git
-            tag: v5.38.2
-            commit: 55dd2f792ffc8cefe614350a411f785374281b24
+            tag: v5.40.0
+            commit: f22a16ecf4821b7e93d2569f630817a2631fddd9
             disable-fsckobjects: true
             x-checker-data:
               type: git
@@ -310,8 +310,8 @@ modules:
       - --disable-full-tgetent
     sources:
       - type: archive
-        url: https://invisible-mirror.net/archives/xterm/xterm-390.tgz
-        sha256: 75117c3cc5174a09c425ef106e69404d72f5ef05e03a5da00aaf15792d6f9c0f
+        url: https://invisible-mirror.net/archives/xterm/xterm-393.tgz
+        sha256: dc3abf533d66ae3db49e6783b0e1e29f0e4d045b4b3dac797a5e93be2735ec7b
         x-checker-data:
           type: anitya
           project-id: 5272
@@ -389,8 +389,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/ImageMagick/ImageMagick
-        tag: 7.1.1-30
-        commit: dd459b01fd3dba99a5190aaca458c628293de0a3
+        tag: 7.1.1-35
+        commit: d775d2ac6fc0ca1790ec9a248b34b8c3bd391566
         x-checker-data:
           type: git
           tag-pattern: ^([\d.]+-[\d]+)$
@@ -541,8 +541,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/vcrhonek/hwdata
-        tag: v0.381
-        commit: 4463530857af32d9dbfcfa9939c2304b51e5e58d
+        tag: v0.384
+        commit: 30da6d148d996a5fbc43a9e27f5b325558b600bd
         x-checker-data:
           type: json
           url: https://api.github.com/repos/vcrhonek/hwdata/releases/latest
