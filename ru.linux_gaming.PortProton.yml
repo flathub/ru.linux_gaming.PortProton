@@ -35,6 +35,7 @@ finish-args:
   - --env=WEBKIT_DISABLE_DMABUF_RENDERER=1
   - --env=GST_PLUGIN_SYSTEM_PATH=/app/lib/gstreamer-1.0:/usr/lib/x86_64-linux-gnu/gstreamer-1.0:/app/lib32/gstreamer-1.0:/usr/lib/i386-linux-gnu/gstreamer-1.0
   - --talk-name=org.kde.StatusNotifierWatcher
+  - --talk-name=org.freedesktop.Notifications
 
 add-extensions:
 
