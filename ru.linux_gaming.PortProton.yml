@@ -643,8 +643,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/Castro-Fidel/PortProton_ALT
-        tag: v1.7.0
-        commit: ebfbc2fb83fa0c3a07eb105e77b095d324821800
+        tag: v1.7.1
+        commit: b1e29d99daba9e5a5dd4a6da023d452f7379a6d3
         x-checker-data:
           type: git
           tag-pattern: ^v([\\d.]+)$
