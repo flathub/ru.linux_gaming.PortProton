@@ -238,9 +238,6 @@ modules:
             tag: v5.38.2
             commit: 55dd2f792ffc8cefe614350a411f785374281b24
             disable-fsckobjects: true
-            x-checker-data:
-              type: git
-              tag-pattern: ^v(\d+\.\d+[02468].\d+)$
 
   - name: zstd
     buildsystem: meson
