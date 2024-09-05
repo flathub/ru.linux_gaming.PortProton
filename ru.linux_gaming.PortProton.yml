@@ -1,10 +1,17 @@
 app-id: ru.linux_gaming.PortProton
 sdk: org.freedesktop.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.vala
 runtime: org.freedesktop.Platform
 runtime-version: &runtime-version '23.08'
 x-gl-version: &gl-version '1.4'
 x-gl-versions: &gl-versions 23.08;1.4
 x-gl-merge-dirs: &gl-merge-dirs vulkan/icd.d;glvnd/egl_vendor.d;egl/egl_external_platform.d;OpenCL/vendors;lib/dri;lib/d3d;lib/gbm;vulkan/explicit_layer.d;vulkan/implicit_layer.d
+
+build-options:
+  append-path: /usr/lib/sdk/vala/bin
+  append-ld-library-path: /usr/lib/sdk/vala/lib
+
 command: portproton
 separate-locales: false
 
@@ -34,7 +41,12 @@ finish-args:
   # See: https://github.com/flathub/net.lutris.Lutris/pull/368#issuecomment-1751381312
   - --env=WEBKIT_DISABLE_DMABUF_RENDERER=1
   - --env=GST_PLUGIN_SYSTEM_PATH=/app/lib/gstreamer-1.0:/usr/lib/x86_64-linux-gnu/gstreamer-1.0:/app/lib32/gstreamer-1.0:/usr/lib/i386-linux-gnu/gstreamer-1.0
+  # These are for notifications/tray icons
+  - --talk-name=org.gnome.Mutter.IdleMonitor
   - --talk-name=org.kde.StatusNotifierWatcher
+  - --talk-name=com.canonical.AppMenu.Registrar
+  - --talk-name=com.canonical.indicator.application
+  - --talk-name=org.ayatana.indicator.application
   - --talk-name=org.freedesktop.Notifications
 
 add-extensions:
@@ -118,7 +130,6 @@ cleanup:
   - '*.a'
   - '*.pod'
 modules:
-
     # icoextract
   - ru.linux_gaming.PortProton.pypi-deps.yaml
 
@@ -173,6 +184,44 @@ modules:
     modules:
       - shared-modules/intltool/intltool-0.51.json
       - shared-modules/lzo/lzo.json
+      - name: ayatana-ido
+        buildsystem: cmake-ninja
+        sources:
+          - type: git
+            url: https://github.com/AyatanaIndicators/ayatana-ido.git
+            tag: 0.9.1
+      - name: libayatana-indicator
+        buildsystem: cmake-ninja
+        sources:
+          - type: git
+            url: https://github.com/AyatanaIndicators/libayatana-indicator.git
+            tag: 0.9.1
+      - name: libdbusmenu-gtk3
+        buildsystem: autotools
+        build-options:
+          cflags: -Wno-error
+        config-opts:
+          - --with-gtk=3
+          - --disable-dumper
+          - --disable-static
+          - --enable-tests
+          - --disable-gtk-doc
+          - --enable-introspection=no
+          - --disable-vala
+        sources:
+          - type: archive
+            url: https://launchpad.net/libdbusmenu/16.04/16.04.0/+download/libdbusmenu-16.04.0.tar.gz
+            sha256: b9cc4a2acd74509435892823607d966d424bd9ad5d0b00938f27240a1bfa878a
+      - name: libayatana-appindicator
+        buildsystem: cmake-ninja
+        config-opts:
+          - -DENABLE_BINDINGS_MONO=NO
+          - -DENABLE_BINDINGS_VALA=NO
+          - -DENABLE_GTKDOC=NO
+        sources:
+          - type: git
+            url: https://github.com/AyatanaIndicators/libayatana-appindicator.git
+            tag: 0.5.90
 
   # Taken from https://github.com/flathub/fr.romainvigier.MetadataCleaner/blob/74c261effe8536e33c2669b75acb340ecfff3142/fr.romainvigier.MetadataCleaner.yaml#L73
   - name: exiftool
@@ -335,7 +384,7 @@ modules:
       - type: git
         url: https://github.com/FeralInteractive/gamemode.git
         tag: 1.8.2
-        commit: 715a1389b789e661a3996a90fbd2c0bf6c9cf6d2
+        commit: c54d6d4243b0dd0afcb49f2c9836d432da171a2b
         x-checker-data:
           type: git
 
