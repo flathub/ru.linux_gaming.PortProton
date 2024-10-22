@@ -34,8 +34,6 @@ finish-args:
   - --filesystem=xdg-run/gamescope-0:ro
   - --filesystem=xdg-run/pipewire-0:ro
   - --filesystem=host
-  # For ananicy and ananicy-cpp detection
-  - --filesystem=/sys/fs/cgroup/system.slice:ro
   # ENV
   - --env=PATH=/app/bin:/usr/bin:/app/utils/bin:/usr/lib/extensions/vulkan/MangoHud/bin/:/usr/lib/extensions/vulkan/gamescope/bin:/usr/lib/extensions/vulkan/OBSVkCapture/bin
   # For Steam Deck HDR support
