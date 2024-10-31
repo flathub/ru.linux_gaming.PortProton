@@ -3,9 +3,9 @@ sdk: org.freedesktop.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.vala
 runtime: org.freedesktop.Platform
-runtime-version: &runtime-version '23.08'
+runtime-version: &runtime-version '24.08'
 x-gl-version: &gl-version '1.4'
-x-gl-versions: &gl-versions 23.08;1.4
+x-gl-versions: &gl-versions 24.08;1.4
 x-gl-merge-dirs: &gl-merge-dirs vulkan/icd.d;glvnd/egl_vendor.d;egl/egl_external_platform.d;OpenCL/vendors;lib/dri;lib/d3d;lib/gbm;vulkan/explicit_layer.d;vulkan/implicit_layer.d
 
 build-options:
@@ -378,33 +378,6 @@ modules:
           project-id: 5272
           url-template: https://invisible-mirror.net/archives/xterm/xterm-$version.tgz
 
-  - name: gamemode
-    buildsystem: meson
-    config-opts: &gamemode_opts
-      - -Dwith-examples=false
-      - -Dwith-util=false
-      - -Dwith-sd-bus-provider=no-daemon
-    sources: &gamemode_sources
-      - type: git
-        url: https://github.com/FeralInteractive/gamemode.git
-        tag: 1.8.2
-        commit: c54d6d4243b0dd0afcb49f2c9836d432da171a2b
-        x-checker-data:
-          type: git
-
-  - name: gamemode-32bit
-    build-options:
-      arch:
-        x86_64: *compat_i386_opts
-    buildsystem: meson
-    config-opts: *gamemode_opts
-    sources: *gamemode_sources
-
-  - name: gamemoderun
-    buildsystem: simple
-    build-commands:
-      - install -Dm755 data/gamemoderun -t /app/bin
-    sources: *gamemode_sources
   - name: desktop-file-utils
     buildsystem: meson
     sources:
@@ -440,6 +413,17 @@ modules:
         x-checker-data:
           type: git
           tag-pattern: ^sdk-([\d.]+)$
+    modules:
+      - name: vulkan-headers
+        buildsystem: cmake-ninja
+        sources:
+          - type: git
+            url: https://github.com/KhronosGroup/Vulkan-Headers.git
+            tag: sdk-1.3.261.1
+            commit: 85c2334e92e215cce34e8e0ed8b2dce4700f4a50
+            x-checker-data:
+              type: git
+              tag-pattern: ^sdk-([\d.]+)$
 
   - name: xrandr
     sources:
@@ -599,13 +583,12 @@ modules:
     sources: *libusb_sources
 
   - name: usbutils
-    config-opts:
-      - --datadir=/app/share/hwdata
+    buildsystem: meson
     sources:
       - type: git
         url: https://github.com/gregkh/usbutils
-        commit: 23077bf82534baad8adfe33ce4c02b5fb087eb86
-        tag: v017
+        commit: cda6883cade6ec67671d0c7de61e70eb992509a9
+        tag: v018
         x-checker-data:
           type: anitya
           project-id: 5061
