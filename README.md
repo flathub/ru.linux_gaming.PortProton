@@ -43,12 +43,12 @@ To compile PortProton as a Flatpak, you'll need both [Flatpak](https://flatpak.o
 
    Add the adequate filesystem override
    ``` sh
-   flatpak override --filesystem=.config/MangoHud:ro ru.linux_gaming.PortProton
+   flatpak override --user --filesystem=xdg-config/MangoHud:ro ru.linux_gaming.PortProton
    ```
 
 - What tarball downloaded in startup
 
-   During the first run of PortProton the file PortWINE-master.tar.gz is downloaded, these are just scripts that are downloaded from gitlab or github, more details in [upstream](https://github.com/Castro-Fidel/PortProton_ALT/blob/main/portproton#L168).
+   During the first run of PortProton the file PortWINE-master.tar.gz is downloaded, these are just scripts that are downloaded from gitlab or github, more details in [upstream](https://github.com/Castro-Fidel/PortProton_ALT/blob/main/portproton).
 
 - Building custom wine version used in PortProton from source code
 
@@ -56,4 +56,7 @@ To compile PortProton as a Flatpak, you'll need both [Flatpak](https://flatpak.o
 
 - What to do if PortProton does not follow the system theme
 
-   See [this post](https://linux-gaming.ru/t/smena-svetloj-temy-fletpak-versii-na-tyomnuyu/564)
+  ```sh
+  flatpak override --user --filesystem=xdg-config/gtk-3.0 ru.linux_gaming.PortProton
+  flatpak override --user --env=GTK_THEME=$(gsettings get org.gnome.desktop.interface gtk-theme | tr -d "'") ru.linux_gaming.PortProton
+  ```
