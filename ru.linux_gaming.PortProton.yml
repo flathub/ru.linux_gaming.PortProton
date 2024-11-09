@@ -1,17 +1,10 @@
 app-id: ru.linux_gaming.PortProton
-sdk: org.freedesktop.Sdk
-sdk-extensions:
-  - org.freedesktop.Sdk.Extension.vala
 runtime: org.freedesktop.Platform
-runtime-version: &runtime-version '23.08'
-x-gl-version: &gl-version '1.4'
-x-gl-versions: &gl-versions 23.08;1.4
+runtime-version: &runtime-version "24.08"
+x-gl-version: &gl-version "1.4"
+x-gl-versions: &gl-versions 24.08;24.08-extra;1.4
 x-gl-merge-dirs: &gl-merge-dirs vulkan/icd.d;glvnd/egl_vendor.d;egl/egl_external_platform.d;OpenCL/vendors;lib/dri;lib/d3d;lib/gbm;vulkan/explicit_layer.d;vulkan/implicit_layer.d
-
-build-options:
-  append-path: /usr/lib/sdk/vala/bin
-  append-ld-library-path: /usr/lib/sdk/vala/lib
-
+sdk: org.freedesktop.Sdk
 command: portproton
 separate-locales: false
 
@@ -34,11 +27,11 @@ finish-args:
   - --filesystem=xdg-run/gamescope-0:ro
   - --filesystem=xdg-run/pipewire-0:ro
   - --filesystem=host
-  # ENV
+  # Mangohud, OBSVkCapture and GameScope
   - --env=PATH=/app/bin:/usr/bin:/app/utils/bin:/usr/lib/extensions/vulkan/MangoHud/bin/:/usr/lib/extensions/vulkan/gamescope/bin:/usr/lib/extensions/vulkan/OBSVkCapture/bin
   # For Steam Deck HDR support
   - --env=LD_LIBRARY_PATH=/usr/lib/extensions/vulkan/gamescope/lib
-  - --env=GST_PLUGIN_SYSTEM_PATH=/app/lib/gstreamer-1.0:/usr/lib/x86_64-linux-gnu/gstreamer-1.0:/app/lib32/gstreamer-1.0:/usr/lib/i386-linux-gnu/gstreamer-1.0
+  - --env=GST_PLUGIN_SYSTEM_PATH=/app/lib/gstreamer-1.0:/app/lib32/gstreamer-1.0:/usr/lib/extensions/gstreamer-1.0:/usr/lib/x86_64-linux-gnu/gstreamer-1.0:/usr/lib/i386-linux-gnu/gstreamer-1.0
   # These are for notifications/tray icons
   - --talk-name=org.gnome.Mutter.IdleMonitor
   - --talk-name=org.kde.StatusNotifierWatcher
@@ -48,7 +41,6 @@ finish-args:
   - --talk-name=org.freedesktop.Notifications
 
 add-extensions:
-
   org.freedesktop.Platform.Compat.i386:
     directory: lib/i386-linux-gnu
     version: *runtime-version
@@ -105,21 +97,29 @@ add-extensions:
 
   org.winehq.Wine.gecko:
     directory: share/wine/gecko
+
   org.winehq.Wine.mono:
     directory: share/wine/mono
-
-x-compat-i386-opts: &compat_i386_opts
-  prepend-pkg-config-path: /app/lib32/pkgconfig:/usr/lib/i386-linux-gnu/pkgconfig
-  ldflags: -L/app/lib32
-  append-path: /usr/lib/sdk/toolchain-i386/bin
-  env:
-    CC: i686-unknown-linux-gnu-gcc
-    CXX: i686-unknown-linux-gnu-g++
-  libdir: /app/lib32
 
 sdk-extensions:
   - org.freedesktop.Sdk.Compat.i386
   - org.freedesktop.Sdk.Extension.toolchain-i386
+
+build-options:
+  env:
+    PERL5LIB: /app/lib/perl5/
+    PERL_MM_OPT: INSTALL_BASE=/app
+
+x-compat-i386-opts: &compat_i386_opts
+  prepend-pkg-config-path: /app/lib32/pkgconfig:/usr/lib/i386-linux-gnu/pkgconfig
+  # Some autotools-based builds will fail if -L/app/lib32 isn't first
+  ldflags: -L/app/lib32 -Wl,-rpath-link=/app/lib32 -Wl,-z,relro,-z,now -Wl,--as-needed
+  ldflags-override: true
+  append-path: /usr/lib/sdk/toolchain-i386/bin
+  env:
+    CC: ccache i686-unknown-linux-gnu-gcc
+    CXX: ccache i686-unknown-linux-gnu-g++
+  libdir: /app/lib32
 
 cleanup:
   - /include
@@ -129,9 +129,11 @@ cleanup:
   - /share/gtk-doc
   - /share/man
   - /share/pkgconfig
-  - '*.la'
-  - '*.a'
-  - '*.pod'
+  - /share/help
+  - /share/vala
+  - "*.la"
+  - "*.a"
+  - "*.pod"
 modules:
   - ru.linux_gaming.PortProton.pypi-deps.yaml
 
@@ -186,44 +188,8 @@ modules:
     modules:
       - shared-modules/intltool/intltool-0.51.json
       - shared-modules/lzo/lzo.json
-      - name: ayatana-ido
-        buildsystem: cmake-ninja
-        sources:
-          - type: git
-            url: https://github.com/AyatanaIndicators/ayatana-ido.git
-            tag: 0.9.1
-      - name: libayatana-indicator
-        buildsystem: cmake-ninja
-        sources:
-          - type: git
-            url: https://github.com/AyatanaIndicators/libayatana-indicator.git
-            tag: 0.9.1
-      - name: libdbusmenu-gtk3
-        buildsystem: autotools
-        build-options:
-          cflags: -Wno-error
-        config-opts:
-          - --with-gtk=3
-          - --disable-dumper
-          - --disable-static
-          - --enable-tests
-          - --disable-gtk-doc
-          - --enable-introspection=no
-          - --disable-vala
-        sources:
-          - type: archive
-            url: https://launchpad.net/libdbusmenu/16.04/16.04.0/+download/libdbusmenu-16.04.0.tar.gz
-            sha256: b9cc4a2acd74509435892823607d966d424bd9ad5d0b00938f27240a1bfa878a
-      - name: libayatana-appindicator
-        buildsystem: cmake-ninja
-        config-opts:
-          - -DENABLE_BINDINGS_MONO=NO
-          - -DENABLE_BINDINGS_VALA=NO
-          - -DENABLE_GTKDOC=NO
-        sources:
-          - type: git
-            url: https://github.com/AyatanaIndicators/libayatana-appindicator.git
-            tag: 0.5.90
+      - shared-modules/libayatana-appindicator/libayatana-appindicator-gtk3.json
+      - shared-modules/squashfs-tools/squashfs-tools.json
 
   # Taken from https://github.com/flathub/fr.romainvigier.MetadataCleaner/blob/74c261effe8536e33c2669b75acb340ecfff3142/fr.romainvigier.MetadataCleaner.yaml#L73
   - name: exiftool
@@ -232,11 +198,11 @@ modules:
       - perl Makefile.PL
       - make install
     cleanup:
-      - '*.pod'
+      - "*.pod"
     sources:
       - type: git
         url: https://github.com/exiftool/exiftool.git
-        tag: '12.96'
+        tag: "12.96"
         commit: 0f63a780906abcccba796761fc2e66a0737e2f16
         x-checker-data:
           type: git
@@ -282,40 +248,13 @@ modules:
           - /bin/streamzip
           - /bin/xsubpp
           - /bin/zipdetails
-          - '*.pod'
+          - "*.pod"
         sources:
           - type: git
             url: https://github.com/Perl/perl5.git
             tag: v5.38.2
             commit: 55dd2f792ffc8cefe614350a411f785374281b24
             disable-fsckobjects: true
-
-  - name: zstd
-    buildsystem: meson
-    builddir: true
-    subdir: build/meson
-    sources:
-      - type: archive
-        url: https://github.com/facebook/zstd/releases/download/v1.5.6/zstd-1.5.6.tar.gz
-        sha256: 8c29e06cf42aacc1eafc4077ae2ec6c6fcb96a626157e0593d5e82a34fd403c1
-        x-checker-data:
-          type: anitya
-          project-id: 12083
-          url-template: https://github.com/facebook/zstd/releases/download/v$version/zstd-$version.tar.gz
-
-  - name: squashfs-tools
-    buildsystem: simple
-    build-commands:
-      - XZ_SUPPORT=1 LZO_SUPPORT=1 ZSTD_SUPPORT=1 make -C squashfs-tools -j ${FLATPAK_BUILDER_N_JOBS}
-        install INSTALL_DIR=${FLATPAK_DEST}/bin INSTALL_MANPAGES_DIR=${FLATPAK_DEST}/man/man1
-    sources:
-      - type: git
-        url: https://github.com/plougher/squashfs-tools.git
-        tag: 4.6.1
-        commit: d8cb82d9840330f9344ec37b992595b5d7b44184
-        x-checker-data:
-          type: git
-          tag-pattern: ^([\\d.]+)$
 
   - name: libXmu
     buildsystem: autotools
@@ -376,33 +315,6 @@ modules:
           project-id: 5272
           url-template: https://invisible-mirror.net/archives/xterm/xterm-$version.tgz
 
-  - name: gamemode
-    buildsystem: meson
-    config-opts: &gamemode_opts
-      - -Dwith-examples=false
-      - -Dwith-util=false
-      - -Dwith-sd-bus-provider=no-daemon
-    sources: &gamemode_sources
-      - type: git
-        url: https://github.com/FeralInteractive/gamemode.git
-        tag: 1.8.2
-        commit: c54d6d4243b0dd0afcb49f2c9836d432da171a2b
-        x-checker-data:
-          type: git
-
-  - name: gamemode-32bit
-    build-options:
-      arch:
-        x86_64: *compat_i386_opts
-    buildsystem: meson
-    config-opts: *gamemode_opts
-    sources: *gamemode_sources
-
-  - name: gamemoderun
-    buildsystem: simple
-    build-commands:
-      - install -Dm755 data/gamemoderun -t /app/bin
-    sources: *gamemode_sources
   - name: desktop-file-utils
     buildsystem: meson
     sources:
@@ -413,16 +325,6 @@ modules:
           type: anitya
           project-id: 421
           url-template: https://www.freedesktop.org/software/desktop-file-utils/releases/desktop-file-utils-$version.tar.xz
-
-  - name: cabextract
-    sources:
-      - type: archive
-        url: https://www.cabextract.org.uk/cabextract-1.11.tar.gz
-        sha256: b5546db1155e4c718ff3d4b278573604f30dd64c3c5bfd4657cd089b823a3ac6
-        x-checker-data:
-          type: anitya
-          project-id: 245
-          url-template: https://www.cabextract.org.uk/cabextract-$version.tar.gz
 
   - name: vulkan-tools
     buildsystem: cmake-ninja
@@ -438,6 +340,17 @@ modules:
         x-checker-data:
           type: git
           tag-pattern: ^sdk-([\d.]+)$
+    modules:
+      - name: vulkan-headers
+        buildsystem: cmake-ninja
+        sources:
+          - type: git
+            url: https://github.com/KhronosGroup/Vulkan-Headers.git
+            tag: sdk-1.3.261.1
+            commit: 85c2334e92e215cce34e8e0ed8b2dce4700f4a50
+            x-checker-data:
+              type: git
+              tag-pattern: ^sdk-([\d.]+)$
 
   - name: xrandr
     sources:
@@ -546,6 +459,50 @@ modules:
           url: https://api.github.com/repos/vcrhonek/hwdata/releases/latest
           tag-query: .tag_name
 
+  - name: libusb
+    sources: &libusb-sources
+      - type: archive
+        url: https://github.com/libusb/libusb/releases/download/v1.0.27/libusb-1.0.27.tar.bz2
+        sha256: ffaa41d741a8a3bee244ac8e54a72ea05bf2879663c098c82fc5757853441575
+        x-checker-data:
+          type: json
+          url: https://api.github.com/repos/libusb/libusb/releases/latest
+          tag-query: .tag_name
+          version-query: $tag | sub("^[vV]"; "")
+          timestamp-query: .published_at
+          url-query: .assets[] | select(.name=="libusb-\($version).tar.bz2") | .browser_download_url
+
+  - name: libusb-32bit
+    build-options:
+      arch:
+        x86_64: *compat_i386_opts
+    sources: *libusb-sources
+
+  - name: FAudio
+    buildsystem: cmake-ninja
+    config-opts: &FAudio-config-opts
+      - -DGSTREAMER=ON
+    sources: &FAudio-sources
+      - type: archive
+        url: https://github.com/FNA-XNA/FAudio/archive/24.09/FAudio-24.09.tar.gz
+        sha256: 696ef2a0fb4c6208f239f21803ff3f39041d92db1769cf19e390782be07430b6
+        x-checker-data:
+          type: json
+          url: https://api.github.com/repos/FNA-XNA/FAudio/releases/latest
+          tag-query: .tag_name
+          version-query: $tag | sub("^[vV]"; "")
+          timestamp-query: .published_at
+          url-query: >-
+            "https://github.com/FNA-XNA/FAudio/archive/\($version)/FAudio-\($version).tar.gz"
+
+  - name: FAudio-32bit
+    build-options:
+      arch:
+        x86_64: *compat_i386_opts
+    buildsystem: cmake-ninja
+    config-opts: *FAudio-config-opts
+    sources: *FAudio-sources
+
   - name: eudev
     cleanup:
       - /bin
@@ -565,19 +522,6 @@ modules:
           timestamp-query: .published_at
           url-query: .assets[] | select(.name=="eudev-\($version).tar.gz") | .browser_download_url
 
-  - name: libusb
-    sources: &libusb_sources
-      - type: archive
-        url: https://github.com/libusb/libusb/releases/download/v1.0.27/libusb-1.0.27.tar.bz2
-        sha256: ffaa41d741a8a3bee244ac8e54a72ea05bf2879663c098c82fc5757853441575
-        x-checker-data:
-          type: json
-          url: https://api.github.com/repos/libusb/libusb/releases/latest
-          tag-query: .tag_name
-          version-query: $tag | sub("^[vV]"; "")
-          timestamp-query: .published_at
-          url-query: .assets[] | select(.name=="libusb-\($version).tar.bz2") | .browser_download_url
-
   - name: eudev-32bit
     build-options:
       arch:
@@ -588,22 +532,13 @@ modules:
       - /lib*/udev
     sources: *eudev_sources
 
-  - name: libusb-32bit
-    build-options:
-      arch:
-        x86_64: *compat_i386_opts
-      ldflags: -L/app/lib32 -Wl,-z,relro,-z,now -Wl,--as-needed
-      ldflags-override: true
-    sources: *libusb_sources
-
   - name: usbutils
-    config-opts:
-      - --datadir=/app/share/hwdata
+    buildsystem: meson
     sources:
       - type: git
         url: https://github.com/gregkh/usbutils
-        commit: 23077bf82534baad8adfe33ce4c02b5fb087eb86
-        tag: v017
+        commit: cda6883cade6ec67671d0c7de61e70eb992509a9
+        tag: v018
         x-checker-data:
           type: anitya
           project-id: 5061
@@ -624,6 +559,9 @@ modules:
         mkdir -p /app/lib/debug/lib/i386-linux-gnu
         mkdir -p /app/lib/debug/lib/i386-linux-gnu/GL
         mkdir -p /app/lib/i386-linux-gnu/dri/intel-vaapi-driver
+        mkdir -p /app/share/vulkan/implicit_layer.d/
+        mkdir -p /app/share/wine/gecko/
+        mkdir -p /app/share/wine/mono/
         install -Dm644 -t /app/etc ld.so.conf
     sources:
       - type: inline
