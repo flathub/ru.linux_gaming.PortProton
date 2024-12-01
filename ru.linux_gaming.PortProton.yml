@@ -38,8 +38,6 @@ finish-args:
   - --env=PATH=/app/bin:/usr/bin:/app/utils/bin:/usr/lib/extensions/vulkan/MangoHud/bin/:/usr/lib/extensions/vulkan/gamescope/bin:/usr/lib/extensions/vulkan/OBSVkCapture/bin
   # For Steam Deck HDR support
   - --env=LD_LIBRARY_PATH=/usr/lib/extensions/vulkan/gamescope/lib
-  # See: https://github.com/flathub/net.lutris.Lutris/pull/368#issuecomment-1751381312
-  - --env=WEBKIT_DISABLE_DMABUF_RENDERER=1
   - --env=GST_PLUGIN_SYSTEM_PATH=/app/lib/gstreamer-1.0:/usr/lib/x86_64-linux-gnu/gstreamer-1.0:/app/lib32/gstreamer-1.0:/usr/lib/i386-linux-gnu/gstreamer-1.0
   # These are for notifications/tray icons
   - --talk-name=org.gnome.Mutter.IdleMonitor
