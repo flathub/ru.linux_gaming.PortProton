@@ -39,6 +39,8 @@ finish-args:
   - --talk-name=com.canonical.indicator.application
   - --talk-name=org.ayatana.indicator.application
   - --talk-name=org.freedesktop.Notifications
+  # Inhibit ScreenSaver on Game Active
+  - --talk-name=org.freedesktop.ScreenSaver
 
 add-extensions:
   org.freedesktop.Platform.Compat.i386:
