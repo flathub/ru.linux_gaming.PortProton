@@ -1,7 +1,7 @@
 app-id: ru.linux_gaming.PortProton
 runtime: org.freedesktop.Platform
-runtime-version: &runtime-version "24.08"
-x-gl-version: &gl-version "1.4"
+runtime-version: &runtime-version '24.08'
+x-gl-version: &gl-version '1.4'
 x-gl-versions: &gl-versions 24.08;24.08-extra;1.4
 x-gl-merge-dirs: &gl-merge-dirs vulkan/icd.d;glvnd/egl_vendor.d;egl/egl_external_platform.d;OpenCL/vendors;lib/dri;lib/d3d;lib/gbm;vulkan/explicit_layer.d;vulkan/implicit_layer.d
 sdk: org.freedesktop.Sdk
@@ -133,9 +133,9 @@ cleanup:
   - /share/pkgconfig
   - /share/help
   - /share/vala
-  - "*.la"
-  - "*.a"
-  - "*.pod"
+  - '*.la'
+  - '*.a'
+  - '*.pod'
 modules:
   - ru.linux_gaming.PortProton.pypi-deps.yaml
 
@@ -153,8 +153,8 @@ modules:
     buildsystem: autotools
     sources:
       - type: archive
-        url: https://github.com/kkos/oniguruma/releases/download/v6.9.9/onig-6.9.9.tar.gz
-        sha256: 60162bd3b9fc6f4886d4c7a07925ffd374167732f55dce8c491bfd9cd818a6cf
+        url: https://github.com/kkos/oniguruma/releases/download/v6.9.10/onig-6.9.10.tar.gz
+        sha256: 2a5cfc5ae259e4e97f86b68dfffc152cdaffe94e2060b770cb827238d769fc05
         x-checker-data:
           type: anitya
           project-id: 11184
@@ -200,12 +200,12 @@ modules:
       - perl Makefile.PL
       - make install
     cleanup:
-      - "*.pod"
+      - '*.pod'
     sources:
       - type: git
         url: https://github.com/exiftool/exiftool.git
-        tag: "12.96"
-        commit: 0f63a780906abcccba796761fc2e66a0737e2f16
+        tag: '13.22'
+        commit: a299723e66ea378b11bb5380d89c9a7c94df4153
         x-checker-data:
           type: git
           tag-pattern: ^(\d+\.\d+[02468])$
@@ -250,7 +250,7 @@ modules:
           - /bin/streamzip
           - /bin/xsubpp
           - /bin/zipdetails
-          - "*.pod"
+          - '*.pod'
         sources:
           - type: git
             url: https://github.com/Perl/perl5.git
@@ -310,8 +310,8 @@ modules:
       - --disable-full-tgetent
     sources:
       - type: archive
-        url: https://invisible-mirror.net/archives/xterm/xterm-394.tgz
-        sha256: a2a0cb206eb0423dedc34794f5c2d38c83390d2dd1106b66aba0960c3a976c7a
+        url: https://invisible-mirror.net/archives/xterm/xterm-397.tgz
+        sha256: 2e9b742b9cba44ecec58074e513237f6cd6d5923f1737cb36a4e5625f4ae8662
         x-checker-data:
           type: anitya
           project-id: 5272
@@ -321,8 +321,8 @@ modules:
     buildsystem: meson
     sources:
       - type: archive
-        url: https://www.freedesktop.org/software/desktop-file-utils/releases/desktop-file-utils-0.27.tar.xz
-        sha256: a0817df39ce385b6621880407c56f1f298168c040c2032cedf88d5b76affe836
+        url: https://www.freedesktop.org/software/desktop-file-utils/releases/desktop-file-utils-0.28.tar.xz
+        sha256: 4401d4e231d842c2de8242395a74a395ca468cd96f5f610d822df33594898a70
         x-checker-data:
           type: anitya
           project-id: 421
@@ -430,7 +430,7 @@ modules:
       - cp -a libXNVCtrl.so* ${FLATPAK_DEST}/lib/
       - install -D *.h -t ${FLATPAK_DEST}/include/NVCtrl
     subdir: src/libXNVCtrl
-    sources: &libNVCtrl-sources
+    sources:
       - type: archive
         archive-type: tar
         url: https://api.github.com/repos/NVIDIA/nvidia-settings/tarball/refs/tags/470.63.01
@@ -449,8 +449,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/vcrhonek/hwdata
-        tag: v0.386
-        commit: 5dcfe62fae3812b8c2ecb7a5158cc7fb375664cb
+        tag: v0.392
+        commit: e3aac7f6bed87ca6d701bb5ad30f29a8df857f66
         x-checker-data:
           type: json
           url: https://api.github.com/repos/vcrhonek/hwdata/releases/latest
