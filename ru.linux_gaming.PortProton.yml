@@ -200,8 +200,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/exiftool/exiftool.git
-        tag: '13.22'
-        commit: a299723e66ea378b11bb5380d89c9a7c94df4153
+        tag: '13.26'
+        commit: cd31f33c3d5bfe85396ae9a2ee6d2efd0ef65934
         x-checker-data:
           type: git
           tag-pattern: ^(\d+\.\d+[02468])$
@@ -445,8 +445,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/vcrhonek/hwdata
-        tag: v0.392
-        commit: e3aac7f6bed87ca6d701bb5ad30f29a8df857f66
+        tag: v0.394
+        commit: fa1ccf4e4944bdb4110025c5c40e4fee8c8de29b
         x-checker-data:
           type: json
           url: https://api.github.com/repos/vcrhonek/hwdata/releases/latest
