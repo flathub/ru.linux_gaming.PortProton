@@ -151,8 +151,8 @@ modules:
     buildsystem: autotools
     sources:
       - type: archive
-        url: https://github.com/stedolan/jq/releases/download/jq-1.7.1/jq-1.7.1.tar.gz
-        sha256: 478c9ca129fd2e3443fe27314b455e211e0d8c60bc8ff7df703873deeee580c2
+        url: https://github.com/stedolan/jq/releases/download/jq-1.8.1/jq-1.8.1.tar.gz
+        sha256: 2be64e7129cecb11d5906290eba10af694fb9e3e7f9fc208a311dc33ca837eb0
         x-checker-data:
           type: anitya
           project-id: 13252
@@ -190,8 +190,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/exiftool/exiftool.git
-        tag: '13.28'
-        commit: 34f82a5a80f164429c7744b2d7335223159ddfff
+        tag: '13.32'
+        commit: a755221b7937406a16b40bcd533e992aa8b5caa0
         x-checker-data:
           type: git
           tag-pattern: ^(\d+\.\d+[02468])$
@@ -435,8 +435,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/vcrhonek/hwdata
-        tag: v0.395
-        commit: 95c1de6c4a0d40415867b29c0791480fb8ad3cdb
+        tag: v0.397
+        commit: e4423c783ca7db5c9d6d4881985272849f4892cf
         x-checker-data:
           type: json
           url: https://api.github.com/repos/vcrhonek/hwdata/releases/latest
@@ -445,8 +445,8 @@ modules:
   - name: libusb
     sources: &libusb-sources
       - type: archive
-        url: https://github.com/libusb/libusb/releases/download/v1.0.28/libusb-1.0.28.tar.bz2
-        sha256: 966bb0d231f94a474eaae2e67da5ec844d3527a1f386456394ff432580634b29
+        url: https://github.com/libusb/libusb/releases/download/v1.0.29/libusb-1.0.29.tar.bz2
+        sha256: 5977fc950f8d1395ccea9bd48c06b3f808fd3c2c961b44b0c2e6e29fc3a70a85
         x-checker-data:
           type: json
           url: https://api.github.com/repos/libusb/libusb/releases/latest
