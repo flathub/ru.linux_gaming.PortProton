@@ -114,14 +114,13 @@ x-compat-i386-opts: &compat_i386_opts
   ldflags: -L/app/lib32 -Wl,-rpath-link=/app/lib32 -Wl,-z,relro,-z,now -Wl,--as-needed
   ldflags-override: true
   append-path: /usr/lib/sdk/toolchain-i386/bin
-  env:
-    CC: ccache i686-unknown-linux-gnu-gcc
-    CXX: ccache i686-unknown-linux-gnu-g++
   libdir: /app/lib32
 
 cleanup:
   - /include
   - /lib*/pkgconfig
+  - /lib/cmake
+  - /share/aclocal
   - /man
   - /share/doc
   - /share/gtk-doc
@@ -345,6 +344,56 @@ modules:
             x-checker-data:
               type: git
               tag-pattern: ^sdk-([\d.]+)$
+
+  - name: spirv
+    buildsystem: cmake-ninja
+    cleanup:
+      - /bin
+    sources:
+      - type: git
+        url: https://github.com/KhronosGroup/SPIRV-Tools.git
+        commit: 0cfe9e7219148716dfd30b37f4d21753f098707a
+        tag: v2024.3
+      - type: git
+        url: https://github.com/KhronosGroup/SPIRV-Headers.git
+        commit: 2acb319af38d43be3ea76bfabf3998e5281d8d12
+        tag: vulkan-sdk-1.3.290.0
+      - type: git
+        url: https://github.com/KhronosGroup/glslang.git
+        commit: fa9c3deb49e035a8abcabe366f26aac010f6cbfb
+        tag: vulkan-sdk-1.3.290.0
+
+  - name: lsfg-vk
+    buildsystem: simple
+    subdir: lsfg-vk-v3.1
+    build-commands:
+      - cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - ninja -C build
+      - install -Dm755 build/liblsfg-vk.so /app/lib/liblsfg-vk.so
+      - install -Dm644 build/VkLayer_LS_frame_generation.json /app/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json
+    sources:
+      - type: git
+        url: https://github.com/PancakeTAS/lsfg-vk.git
+        commit: 1576edcf1a4e0e9e45fe729b6145a506e8d9060c
+    modules:
+
+      - name: sdl3
+        buildsystem: cmake-ninja
+        builddir: true
+        config-opts:
+          - -DCMAKE_BUILD_TYPE=RelWithDebInfo
+          - -DCMAKE_INSTALL_LIBDIR:PATH=lib
+        sources:
+          - type: archive
+            url: https://github.com/libsdl-org/SDL/releases/download/release-3.2.16/SDL3-3.2.16.tar.gz
+            sha256: 6340e58879b2d15830c8460d2f589a385c444d1faa2a4828a9626c7322562be8
+            x-checker-data:
+              type: anitya
+              project-id: 375746
+              stable-only: true
+              versions:
+                <: 4.0.0
+              url-template: https://github.com/libsdl-org/SDL/releases/download/release-${version}/SDL3-${version}.tar.gz
 
   - name: xrandr
     sources:
