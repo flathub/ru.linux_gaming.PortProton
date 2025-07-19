@@ -34,10 +34,7 @@ finish-args:
   - --env=LD_LIBRARY_PATH=/usr/lib/extensions/vulkan/gamescope/lib
   - --env=GST_PLUGIN_SYSTEM_PATH=/app/lib/gstreamer-1.0:/app/lib32/gstreamer-1.0:/usr/lib/extensions/gstreamer-1.0:/usr/lib/x86_64-linux-gnu/gstreamer-1.0:/usr/lib/i386-linux-gnu/gstreamer-1.0
   # These are for notifications/tray icons
-  - --talk-name=org.gnome.Mutter.IdleMonitor
   - --talk-name=org.kde.StatusNotifierWatcher
-  - --talk-name=com.canonical.AppMenu.Registrar
-  - --talk-name=com.canonical.indicator.application
   - --talk-name=org.ayatana.indicator.application
   - --talk-name=org.freedesktop.Notifications
   # Inhibit ScreenSaver on Game Active
