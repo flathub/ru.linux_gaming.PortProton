@@ -187,8 +187,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/exiftool/exiftool.git
-        tag: '13.32'
-        commit: a755221b7937406a16b40bcd533e992aa8b5caa0
+        tag: '13.34'
+        commit: fcbf1077e6fd1ae917362dcf734d3fb703d6bf32
         x-checker-data:
           type: git
           tag-pattern: ^(\d+\.\d+[02468])$
@@ -259,8 +259,8 @@ modules:
     sources:
       - type: git
         url: https://gitlab.freedesktop.org/xorg/app/xdpyinfo.git
-        tag: xdpyinfo-1.3.4
-        commit: ea4083ccb2a5ce4252acabeb2eb7bf49f7be25e0
+        tag: xdpyinfo-1.4.0
+        commit: 7fe49a22498b9438a15d5d9fdef55d5d832b1672
         x-checker-data:
           type: git
           tag-pattern: ^xdpyinfo-([\d.]+)$
@@ -432,8 +432,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/vcrhonek/hwdata
-        tag: v0.397
-        commit: e4423c783ca7db5c9d6d4881985272849f4892cf
+        tag: v0.398
+        commit: 4c97c196390e16a84d3394e7e6f0608046f7ba81
         x-checker-data:
           type: json
           url: https://api.github.com/repos/vcrhonek/hwdata/releases/latest
