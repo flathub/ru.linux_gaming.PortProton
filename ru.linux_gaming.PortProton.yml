@@ -163,8 +163,8 @@ modules:
       - --disable-tools
     sources:
       - type: archive
-        url: https://github.com/v1cont/yad/releases/download/v14.1/yad-14.1.tar.xz
-        sha256: dde047a915cd8d3892c32b6ba031876f5cda673e01882c99613f043867c88133
+        url: https://github.com/v1cont/yad/releases/download/v14.2/yad-14.2.tar.xz
+        sha256: 5cab399af8d9a10b76d477f848180d00addba38f4f1272a05b153a393bba3038
         x-checker-data:
           type: anitya
           project-id: 5280
@@ -187,8 +187,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/exiftool/exiftool.git
-        tag: '13.34'
-        commit: fcbf1077e6fd1ae917362dcf734d3fb703d6bf32
+        tag: '13.44'
+        commit: aa4baf5c71d92e5dc9a077ee24fcc4fd478936c1
         x-checker-data:
           type: git
           tag-pattern: ^(\d+\.\d+[02468])$
@@ -293,8 +293,8 @@ modules:
       - --disable-full-tgetent
     sources:
       - type: archive
-        url: https://invisible-mirror.net/archives/xterm/xterm-401.tgz
-        sha256: 3da2b5e64cb49b03aa13057d85e62e1f2e64f7c744719c00d338d11cd3e6ca1a
+        url: https://invisible-mirror.net/archives/xterm/xterm-406.tgz
+        sha256: 066eb2d66430897fe1dadd271554ccdae33d77c512126a758fc4de37b1148799
         x-checker-data:
           type: anitya
           project-id: 5272
@@ -432,8 +432,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/vcrhonek/hwdata
-        tag: v0.399
-        commit: 7ba0e54565843faee300ca885699e4c42ed674b2
+        tag: v0.402
+        commit: d263c183dd429bbe1572a91a8cf180e84b8341c6
         x-checker-data:
           type: json
           url: https://api.github.com/repos/vcrhonek/hwdata/releases/latest
@@ -492,8 +492,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/gregkh/usbutils
-        commit: cda6883cade6ec67671d0c7de61e70eb992509a9
-        tag: v018
+        commit: d0c76b601b4b3ab9b2ab2647d604a8e3cce6d666
+        tag: v019
         x-checker-data:
           type: anitya
           project-id: 5061
