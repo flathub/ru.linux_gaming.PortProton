@@ -251,8 +251,8 @@ modules:
       - --disable-static
     sources:
       - type: archive
-        url: https://xorg.freedesktop.org/releases/individual/lib/libXmu-1.2.1.tar.gz
-        sha512: 404818db0bb75e0bbff0ef05d6203238e98c86a0ceebde1e05d72ec87cf9c7182e5aa51e9e819714e2a43642db10059f32e9ac7330a546d17c64ca860e155db9
+        url: https://xorg.freedesktop.org/releases/individual/lib/libXmu-1.3.0.tar.gz
+        sha512: dd55ee5ca5945a003c41df95fefa3323e3f580638bc0880eee7a3265d7b8dc9ba036c338475e2dc32e3602115b5b113b13fa600224455320c6eb3988a148f7b2
         x-checker-data:
           type: anitya
           project-id: 1785
