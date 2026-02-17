@@ -297,8 +297,8 @@ modules:
       - --disable-full-tgetent
     sources:
       - type: archive
-        url: https://invisible-mirror.net/archives/xterm/xterm-406.tgz
-        sha256: 066eb2d66430897fe1dadd271554ccdae33d77c512126a758fc4de37b1148799
+        url: https://invisible-mirror.net/archives/xterm/xterm-407.tgz
+        sha256: 2136eba530068a1b7565abbf17823274f5cefb7fe3618355cbc89dc55c8b7b6a
         x-checker-data:
           type: anitya
           project-id: 5272
