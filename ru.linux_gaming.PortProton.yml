@@ -191,8 +191,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/exiftool/exiftool.git
-        tag: '13.54'
-        commit: 5a8b6b6ead12b39e3f32f978a4efd0233facbb01
+        tag: '13.56'
+        commit: e2e11c5992fcbaa80503d9448a6932a14ce2ba31
         x-checker-data:
           type: git
           tag-pattern: ^(\d+\.\d+[02468])$
@@ -297,8 +297,8 @@ modules:
       - --disable-full-tgetent
     sources:
       - type: archive
-        url: https://invisible-mirror.net/archives/xterm/xterm-407.tgz
-        sha256: 2136eba530068a1b7565abbf17823274f5cefb7fe3618355cbc89dc55c8b7b6a
+        url: https://invisible-mirror.net/archives/xterm/xterm-409.tgz
+        sha256: 349dc755c49299ca4b8e3a90f7201dff41877a1e6ac16129e439d76493246c40
         x-checker-data:
           type: anitya
           project-id: 5272
