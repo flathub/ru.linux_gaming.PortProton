@@ -191,8 +191,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/exiftool/exiftool.git
-        tag: '13.56'
-        commit: e2e11c5992fcbaa80503d9448a6932a14ce2ba31
+        tag: '13.58'
+        commit: 38bdbace3037a89d2c332664fc60bddad118958a
         x-checker-data:
           type: git
           tag-pattern: ^(\d+\.\d+[02468])$
@@ -297,8 +297,8 @@ modules:
       - --disable-full-tgetent
     sources:
       - type: archive
-        url: https://invisible-mirror.net/archives/xterm/xterm-409.tgz
-        sha256: 349dc755c49299ca4b8e3a90f7201dff41877a1e6ac16129e439d76493246c40
+        url: https://invisible-mirror.net/archives/xterm/xterm-410.tgz
+        sha256: 7ba9fbb303dd3d95d06ca24360d019048d84e5822dc6fe722cd77369bdbf231f
         x-checker-data:
           type: anitya
           project-id: 5272
@@ -436,8 +436,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/vcrhonek/hwdata
-        tag: v0.406
-        commit: 9ae3b9da5cbb93eed30f812aa7edb4b9ad3e3868
+        tag: v0.407
+        commit: a9bbe4d8619e9a73dc433db2d2afceda8cbeae10
         x-checker-data:
           type: json
           url: https://api.github.com/repos/vcrhonek/hwdata/releases/latest
