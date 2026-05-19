@@ -148,18 +148,6 @@ modules:
           stable-only: true
           url-template: https://github.com/kkos/oniguruma/releases/download/v${version}/onig-${version}.tar.gz
 
-  - name: jq
-    buildsystem: autotools
-    sources:
-      - type: archive
-        url: https://github.com/stedolan/jq/releases/download/jq-1.8.1/jq-1.8.1.tar.gz
-        sha256: 2be64e7129cecb11d5906290eba10af694fb9e3e7f9fc208a311dc33ca837eb0
-        x-checker-data:
-          type: anitya
-          project-id: 13252
-          stable-only: true
-          url-template: https://github.com/stedolan/jq/releases/download/jq-${version}/jq-${version}.tar.gz
-
   - name: yad
     config-opts:
       - --enable-standalone
@@ -303,17 +291,6 @@ modules:
           type: anitya
           project-id: 5272
           url-template: https://invisible-mirror.net/archives/xterm/xterm-$version.tgz
-
-  - name: desktop-file-utils
-    buildsystem: meson
-    sources:
-      - type: archive
-        url: https://www.freedesktop.org/software/desktop-file-utils/releases/desktop-file-utils-0.28.tar.xz
-        sha256: 4401d4e231d842c2de8242395a74a395ca468cd96f5f610d822df33594898a70
-        x-checker-data:
-          type: anitya
-          project-id: 421
-          url-template: https://www.freedesktop.org/software/desktop-file-utils/releases/desktop-file-utils-$version.tar.xz
 
   - name: cabextract
     sources:
