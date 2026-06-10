@@ -1,19 +1,28 @@
 app-id: ru.linux_gaming.PortProton
-sdk: org.freedesktop.Sdk
-runtime: org.freedesktop.Platform
-runtime-version: &runtime-version '23.08'
-x-gl-version: &gl-version '1.4'
-x-gl-versions: &gl-versions 23.08;1.4
-x-gl-merge-dirs: &gl-merge-dirs vulkan/icd.d;glvnd/egl_vendor.d;egl/egl_external_platform.d;OpenCL/vendors;lib/dri;lib/d3d;lib/gbm;vulkan/explicit_layer.d;vulkan/implicit_layer.d
-command: portproton
+sdk: org.kde.Sdk
+runtime: org.kde.Platform
+runtime-version: '6.10'
+command: portprotonqt
+base: org.winehq.Wine
+base-version: stable-25.08
 separate-locales: false
+build-options:
+  append-path: /usr/lib/sdk/llvm21/bin
+  append-ld-library-path: /usr/lib/sdk/llvm21/lib
+  env:
+    PYGAME_EXTRA_BASE: /app
+    ORIGLIBDIRS: /lib:/lib64:/lib/x86_64-linux-gnu
+    LLVM_INSTALL_DIR: /usr/lib/sdk/llvm21
+
+cleanup-commands:
+  - /app/pyside_cleanup.sh
 
 finish-args:
   - --share=ipc
-  - --socket=x11
   - --socket=wayland
+  # --fallback-x11 forces Wine to run in native Wayland mode it is still too unstable for this behavior
+  - --socket=x11
   - --socket=pulseaudio
-  - --device=all
   - --share=network
   - --allow=multiarch
   - --allow=bluetooth
@@ -23,293 +32,183 @@ finish-args:
   - --allow=per-app-dev-shm
   # Wine uses UDisks2 to enumerate disk drives
   - --system-talk-name=org.freedesktop.UDisks2
-  - --system-talk-name=org.freedesktop.NetworkManager
+  # HDR10 support through gamescope
   - --filesystem=xdg-run/gamescope-0:ro
-  - --filesystem=xdg-run/pipewire-0:ro
   - --filesystem=host
-  # ENV
+  - --device=all
+  # Mangohud, OBSVkCapture and GameScope
   - --env=PATH=/app/bin:/usr/bin:/app/utils/bin:/usr/lib/extensions/vulkan/MangoHud/bin/:/usr/lib/extensions/vulkan/gamescope/bin:/usr/lib/extensions/vulkan/OBSVkCapture/bin
   # For Steam Deck HDR support
   - --env=LD_LIBRARY_PATH=/usr/lib/extensions/vulkan/gamescope/lib
-  # See: https://github.com/flathub/net.lutris.Lutris/pull/368#issuecomment-1751381312
-  - --env=WEBKIT_DISABLE_DMABUF_RENDERER=1
-  - --env=GST_PLUGIN_SYSTEM_PATH=/app/lib/gstreamer-1.0:/usr/lib/x86_64-linux-gnu/gstreamer-1.0:/app/lib32/gstreamer-1.0:/usr/lib/i386-linux-gnu/gstreamer-1.0
+  - --env=GST_PLUGIN_SYSTEM_PATH=/app/lib/gstreamer-1.0:/app/lib32/gstreamer-1.0:/usr/lib/extensions/gstreamer-1.0:/usr/lib/x86_64-linux-gnu/codecs-extra/lib/gstreamer-1.0:/usr/lib/i386-linux-gnu/codecs-extra/lib/gstreamer-1.0:/usr/lib/x86_64-linux-gnu/gstreamer-1.0:/usr/lib/i386-linux-gnu/gstreamer-1.0
+  # These are for tray icons
   - --talk-name=org.kde.StatusNotifierWatcher
-
-add-extensions:
-
-  org.freedesktop.Platform.Compat.i386:
-    directory: lib/i386-linux-gnu
-    version: *runtime-version
-
-  org.freedesktop.Platform.Compat.i386.Debug:
-    directory: lib/debug/lib/i386-linux-gnu
-    version: *runtime-version
-    no-autodownload: true
-
-  org.freedesktop.Platform.GL32:
-    directory: lib/i386-linux-gnu/GL
-    version: *gl-version
-    versions: *gl-versions
-    subdirectories: true
-    no-autodownload: true
-    autodelete: false
-    add-ld-path: lib
-    merge-dirs: *gl-merge-dirs
-    download-if: active-gl-driver
-    enable-if: active-gl-driver
-    autoprune-unless: active-gl-driver
-
-  org.freedesktop.Platform.GL32.Debug:
-    directory: lib/debug/lib/i386-linux-gnu/GL
-    version: *gl-version
-    versions: *gl-versions
-    subdirectories: true
-    no-autodownload: true
-    merge-dirs: *gl-merge-dirs
-    enable-if: active-gl-driver
-    autoprune-unless: active-gl-driver
-
-  org.freedesktop.Platform.VAAPI.Intel.i386:
-    directory: lib/i386-linux-gnu/dri/intel-vaapi-driver
-    version: *runtime-version
-    versions: *runtime-version
-    autodelete: false
-    no-autodownload: true
-    add-ld-path: lib
-    download-if: have-intel-gpu
-    autoprune-unless: have-intel-gpu
-
-  org.freedesktop.Platform.ffmpeg-full:
-    directory: lib/ffmpeg
-    add-ld-path: .
-    version: *runtime-version
-    autodelete: false
-
-  org.freedesktop.Platform.ffmpeg_full.i386:
-    directory: lib32/ffmpeg
-    add-ld-path: .
-    version: *runtime-version
-    autodelete: false
-
-x-compat-i386-opts: &compat_i386_opts
-  prepend-pkg-config-path: /app/lib32/pkgconfig:/usr/lib/i386-linux-gnu/pkgconfig
-  ldflags: -L/app/lib32
-  append-path: /usr/lib/sdk/toolchain-i386/bin
-  env:
-    CC: i686-unknown-linux-gnu-gcc
-    CXX: i686-unknown-linux-gnu-g++
-  libdir: /app/lib32
-
-sdk-extensions:
-  - org.freedesktop.Sdk.Compat.i386
-  - org.freedesktop.Sdk.Extension.toolchain-i386
 
 cleanup:
   - /include
   - /lib*/pkgconfig
+  - /lib/python3.*/*/*/docs
+  - /lib/python3.*/*/*/examples
+  - /lib/python3.*/*/*/tests
   - /man
   - /share/doc
   - /share/gtk-doc
   - /share/man
   - /share/pkgconfig
+  - /share/help
+  - /share/vala
   - '*.la'
   - '*.a'
   - '*.pod'
+
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.llvm21
+
+inherit-extensions:
+  - org.freedesktop.Platform.GL32
+
+add-extensions:
+  org.freedesktop.Platform.Compat.i386:
+    directory: lib/i386-linux-gnu
+    version: '25.08'
+
+  org.freedesktop.Platform.Compat.i386.Debug:
+    directory: lib/debug/lib/i386-linux-gnu
+    version: '25.08'
+    no-autodownload: true
+
+  org.freedesktop.Platform.codecs_extra.i386:
+    directory: lib/i386-linux-gnu/codecs-extra
+    version: 25.08-extra
+    autodelete: false
+    add-ld-path: lib
+
 modules:
+  - ru.linux_gaming.PortProton.pypi-deps.yaml
 
-  - name: yad
-    config-opts:
-      - --enable-standalone
-      - --disable-icon-browser
-      - --disable-tools
+  - name: pyside-setup
+    buildsystem: simple
+    build-commands:
+      - python3 setup.py build --qtpaths=/usr/bin/qtpaths --ignore-git --parallel=8
+        --log-level=verbose --flatpak --no-qt-tools
+      - python3 create_wheels.py --build-dir ./build/qfp-*-release
+      - rm -rf ./dist/PySide6*Examples*.whl
+      - pip install ./dist/*.whl --prefix=${FLATPAK_DEST}
+      - install -Dm755 /usr/lib/sdk/llvm21/lib/libLLVM.so.21.1 ${FLATPAK_DEST}/lib/
+      - install -Dm755 /usr/lib/sdk/llvm21/lib/libclang-cpp.so.21.1 ${FLATPAK_DEST}/lib/
+      - install -Dm755 /usr/lib/sdk/llvm21/lib/libclang.so.21.1 ${FLATPAK_DEST}/lib/
+      - ln -s libLLVM.so.21.1 ${FLATPAK_DEST}/lib/libLLVM.so.21
+      - ln -s libLLVM.so.21.1 ${FLATPAK_DEST}/lib/libLLVM.so
+      - ln -s libclang-cpp.so.21.1 ${FLATPAK_DEST}/lib/libclang-cpp.so.21
+      - ln -s libclang-cpp.so.21.1 ${FLATPAK_DEST}/lib/libclang-cpp.so
+      - ln -s libclang.so.21.1 ${FLATPAK_DEST}/lib/libclang.so.21
+      - ln -s libclang.so.21.1 ${FLATPAK_DEST}/lib/libclang.so
+      - rm -rf ${FLATPAK_DEST}/lib/python*/site-packages/PySide6/examples
+      - rm -rf ${FLATPAK_DEST}/lib/python*/site-packages/pyside6_examples-*.dist-info
     sources:
-      - type: archive
-        url: https://github.com/v1cont/yad/releases/download/v13.0/yad-13.0.tar.xz
-        sha256: 194198c4a58e20ceffd9a3206633c3726d962d7d4219edb77aeb748897403e34
+      - type: git
+        url: "https://code.qt.io/pyside/pyside-setup.git"
+        tag: "v6.10.3"
+        commit: "863e6b6e6269fbd401db06e2066119b9014fcf0d"
+
+  - name: pygame
+    buildsystem: simple
+    build-commands:
+      - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}" --prefix=${FLATPAK_DEST} --no-build-isolation .
+    sources:
+      - type: git
+        url: https://github.com/pygame/pygame
+        tag: 2.6.1
+        commit: b92c0da9d1b5eba6c813138790fc1ab6cea0252c
+      - type: patch
+        path: patches/0001-Use-importlib-instead-of-pkg_resources-on-recent-pyt.patch
+
+  - shared-modules/lzo/lzo.json
+  - shared-modules/squashfs-tools/squashfs-tools.json
+  - shared-modules/glu/glu-9.json
+  - shared-modules/glew/glew.json
+
+  # Taken from https://github.com/flathub/fr.romainvigier.MetadataCleaner/blob/74c261effe8536e33c2669b75acb340ecfff3142/fr.romainvigier.MetadataCleaner.yaml#L73
+  - name: exiftool
+    buildsystem: simple
+    build-commands:
+      - perl Makefile.PL
+      - make install
+    cleanup:
+      - '*.pod'
+    sources:
+      - type: git
+        url: https://github.com/exiftool/exiftool.git
+        tag: '13.56'
+        commit: e2e11c5992fcbaa80503d9448a6932a14ce2ba31
         x-checker-data:
-          type: anitya
-          project-id: 5280
-          stable-only: true
-          url-template: https://github.com/v1cont/yad/releases/download/v$version/yad-$version.tar.xz
+          type: git
+          tag-pattern: ^(\d+\.\d+[02468])$
     modules:
-      - shared-modules/intltool/intltool-0.51.json
-      - shared-modules/lzo/lzo.json
-
-  - name: zstd
-    buildsystem: meson
-    builddir: true
-    subdir: build/meson
-    sources:
-      - type: archive
-        url: https://github.com/facebook/zstd/releases/download/v1.5.5/zstd-1.5.5.tar.gz
-        sha256: 9c4396cc829cfae319a6e2615202e82aad41372073482fce286fac78646d3ee4
-        x-checker-data:
-          type: anitya
-          project-id: 12083
-          url-template: https://github.com/facebook/zstd/releases/download/v$version/zstd-$version.tar.gz
-
-  - name: squashfs-tools
-    buildsystem: simple
-    build-commands:
-      - XZ_SUPPORT=1 LZO_SUPPORT=1 ZSTD_SUPPORT=1 make -C squashfs-tools -j ${FLATPAK_BUILDER_N_JOBS} install INSTALL_DIR=${FLATPAK_DEST}/bin INSTALL_MANPAGES_DIR=${FLATPAK_DEST}/man/man1
-    sources:
-      - type: git
-        url: https://github.com/plougher/squashfs-tools.git
-        tag: 4.6.1
-        commit: d8cb82d9840330f9344ec37b992595b5d7b44184
-        x-checker-data:
-          type: git
-          tag-pattern: ^([\\d.]+)$
-
-  - name: libXmu
-    buildsystem: autotools
-    config-opts:
-      - --disable-static
-    sources:
-      - type: archive
-        url: https://xorg.freedesktop.org/releases/individual/lib/libXmu-1.1.4.tar.gz
-        sha512: 34438e39c5ce88b19bba0cfc123bceb8d7bece4bcaf85f53e69647ba04de9d90d79c6b41f6e1a47b484a76d996a79666ff8e0a4c256d4051e779561d1ee62843
-        x-checker-data:
-          type: anitya
-          project-id: 1785
-          url-template: https://xorg.freedesktop.org/releases/individual/lib/libXmu-$version.tar.gz
-
-  - name: xdpyinfo
-    buildsystem: autotools
-    sources:
-      - type: git
-        url: https://gitlab.freedesktop.org/xorg/app/xdpyinfo.git
-        tag: xdpyinfo-1.3.4
-        commit: ea4083ccb2a5ce4252acabeb2eb7bf49f7be25e0
-        x-checker-data:
-          type: git
-          tag-pattern: ^xdpyinfo-([\d.]+)$
-
-  - name: xrdb
-    buildsystem: autotools
-    sources:
-      - type: archive
-        url: https://xorg.freedesktop.org/releases/individual/app/xrdb-1.2.2.tar.gz
-        sha256: db2d774a35ae2f7e7ac61cc2de0dcae27fc2aa14399c35721f8300e63ea73549
-        x-checker-data:
-          type: anitya
-          project-id: 14956
-          url-template: https://xorg.freedesktop.org/releases/individual/app/xrdb-$version.tar.gz
-
-  - name: libXaw
-    buildsystem: autotools
-    sources:
-      - type: archive
-        url: https://xorg.freedesktop.org/releases/individual/lib/libXaw-1.0.16.tar.gz
-        sha256: 012f90adf8739f2f023d63a5fee1528949cf2aba92ef7ac1abcfc2ae9cf28798
-        x-checker-data:
-          type: anitya
-          project-id: 1766
-          url-template: https://xorg.freedesktop.org/releases/individual/lib/libXaw-$version.tar.gz
-
-  - name: xterm
-    buildsystem: autotools
-    config-opts:
-      - --disable-full-tgetent
-    sources:
-     - type: archive
-       url: https://invisible-mirror.net/archives/xterm/xterm-390.tgz
-       sha256: 75117c3cc5174a09c425ef106e69404d72f5ef05e03a5da00aaf15792d6f9c0f
-       x-checker-data:
-         type: anitya
-         project-id: 5272
-         url-template: https://invisible-mirror.net/archives/xterm/xterm-$version.tgz
-
-  - name: gamemode
-    buildsystem: meson
-    config-opts: &gamemode_opts
-      - -Dwith-examples=false
-      - -Dwith-util=false
-      - -Dwith-sd-bus-provider=no-daemon
-    sources: &gamemode_sources
-      - type: git
-        url: https://github.com/FeralInteractive/gamemode.git
-        tag: 1.8.1
-        commit: 5180d89e66830d87f69687b95fb86f622552b94b
-        x-checker-data:
-          type: git
-
-  - name: gamemode-32bit
-    build-options:
-      arch:
-        x86_64: *compat_i386_opts
-    buildsystem: meson
-    config-opts: *gamemode_opts
-    sources: *gamemode_sources
-
-  - name: gamemoderun
-    buildsystem: simple
-    build-commands:
-      - install -Dm755 data/gamemoderun -t /app/bin
-    sources: *gamemode_sources
-  - name: desktop-file-utils
-    buildsystem: meson
-    sources:
-      - type: archive
-        url: https://www.freedesktop.org/software/desktop-file-utils/releases/desktop-file-utils-0.27.tar.xz
-        sha256: a0817df39ce385b6621880407c56f1f298168c040c2032cedf88d5b76affe836
-        x-checker-data:
-          type: anitya
-          project-id: 421
-          url-template: https://www.freedesktop.org/software/desktop-file-utils/releases/desktop-file-utils-$version.tar.xz
+      - name: perl
+        buildsystem: simple
+        build-commands:
+          - ./Configure -des -Dprefix=$FLATPAK_DEST -Dman1dir=none -Dman3dir=none
+          - make
+          - make install
+        post-install:
+          # Fix wrong permissions
+          - chmod -R u+w $FLATPAK_DEST/lib/perl5
+        cleanup:
+          - /bin/corelist
+          - /bin/cpan
+          - /bin/enc2xs
+          - /bin/encguess
+          - /bin/h2ph
+          - /bin/h2xs
+          - /bin/instmodsh
+          - /bin/json_pp
+          - /bin/libnetcfg
+          - /bin/perl5*
+          - /bin/perlbug
+          - /bin/perldoc
+          - /bin/perlivp
+          - /bin/perlthanks
+          - /bin/piconv
+          - /bin/pl2pm
+          - /bin/pod2html
+          - /bin/pod2man
+          - /bin/pod2text
+          - /bin/pod2usage
+          - /bin/podchecker
+          - /bin/prove
+          - /bin/ptar
+          - /bin/ptardiff
+          - /bin/ptargrep
+          - /bin/shasum
+          - /bin/splain
+          - /bin/streamzip
+          - /bin/xsubpp
+          - /bin/zipdetails
+          - '*.pod'
+        sources:
+          - type: git
+            url: https://github.com/Perl/perl5.git
+            tag: v5.38.2
+            commit: 55dd2f792ffc8cefe614350a411f785374281b24
+            disable-fsckobjects: true
 
   - name: cabextract
     sources:
       - type: archive
         url: https://www.cabextract.org.uk/cabextract-1.11.tar.gz
         sha256: b5546db1155e4c718ff3d4b278573604f30dd64c3c5bfd4657cd089b823a3ac6
-        x-checker-data:
-          type: anitya
-          project-id: 245
-          url-template: https://www.cabextract.org.uk/cabextract-$version.tar.gz
 
-  - name: vulkan-tools
+  - name: vulkan-headers
     buildsystem: cmake-ninja
-    config-opts:
-      - -DGLSLANG_INSTALL_DIR=/app
-      - -DVULKAN_HEADERS_INSTALL_DIR=/app
-      - -DCMAKE_BUILD_TYPE=Release
     sources:
       - type: git
-        url: https://github.com/KhronosGroup/Vulkan-Tools.git
+        url: https://github.com/KhronosGroup/Vulkan-Headers.git
         tag: sdk-1.3.261.1
-        commit: a7da7027ca9fd0901639f02619c226da9c6036f1
+        commit: 85c2334e92e215cce34e8e0ed8b2dce4700f4a50
         x-checker-data:
           type: git
           tag-pattern: ^sdk-([\d.]+)$
-
-  - name: ImageMagick
-    config-opts:
-      - --disable-static
-      - --disable-docs
-      - --with-hdri
-      - --with-pic
-    sources:
-      - type: git
-        url: https://github.com/ImageMagick/ImageMagick
-        tag: 7.1.1-30
-        commit: dd459b01fd3dba99a5190aaca458c628293de0a3
-        x-checker-data:
-          type: git
-          tag-pattern: ^([\d.]+-[\d]+)$
-
-  - name: xrandr
-    sources:
-      - type: archive
-        url: https://xorg.freedesktop.org/archive/individual/app/xrandr-1.5.1.tar.gz
-        sha256: 7b99edb7970a1365eaf5bcaf552144e4dfc3ccf510c4abc08569849929fb366e
-
-  - name: setxkbmap
-    sources:
-      - type: archive
-        url: https://xorg.freedesktop.org/archive/individual/app/setxkbmap-1.3.3.tar.xz
-        sha256: b560c678da6930a0da267304fa3a41cc5df39a96a5e23d06f14984c87b6f587b
 
   - name: glxinfo
     buildsystem: meson
@@ -335,31 +234,6 @@ modules:
       - /include
       - /mesa-demos
       - /share
-    modules:
-      - shared-modules/glu/glu-9.json
-
-  - name: glew
-    no-autogen: true
-    make-args: &glew-make-args
-      - GLEW_PREFIX=${FLATPAK_DEST}
-      - GLEW_DEST=${FLATPAK_DEST}
-      - LIBDIR=${FLATPAK_DEST}/lib
-      - CFLAGS.EXTRA:=${CFLAGS} -fPIC
-      - LDFLAGS.EXTRA=${LDFLAGS}
-    make-install-args: *glew-make-args
-    sources: &glew-sources
-      - type: archive
-        url: https://downloads.sourceforge.net/project/glew/glew/2.2.0/glew-2.2.0.tgz
-        sha256: d4fc82893cfb00109578d0a1a2337fb8ca335b3ceccf97b97e5cc7f08e4353e1
-
-  - name: glew-32bit
-    build-options:
-      arch:
-        x86_64: *compat_i386_opts
-    no-autogen: true
-    make-args: *glew-make-args
-    make-install-args: *glew-make-args
-    sources: *glew-sources
 
   - name: libNVCtrl
     no-autogen: true
@@ -367,8 +241,9 @@ modules:
     build-commands:
       - mkdir -p ${FLATPAK_DEST}/lib
       - cp -a libXNVCtrl.so* ${FLATPAK_DEST}/lib/
+      - install -D *.h -t ${FLATPAK_DEST}/include/NVCtrl
     subdir: src/libXNVCtrl
-    sources: &libNVCtrl-sources
+    sources:
       - type: archive
         archive-type: tar
         url: https://api.github.com/repos/NVIDIA/nvidia-settings/tarball/refs/tags/470.63.01
@@ -381,156 +256,31 @@ modules:
           url-query: .[0].tarball_url
           version-query: .[0].name
 
-  - name: libNVCtrl-32bit
-    build-options:
-      arch:
-        x86_64: *compat_i386_opts
-    no-autogen: true
-    no-make-install: true
-    build-commands:
-      - mkdir -p ${FLATPAK_DEST}/lib32
-      - cp -a libXNVCtrl.so* ${FLATPAK_DEST}/lib32/
-    subdir: src/libXNVCtrl
-    sources: *libNVCtrl-sources
-
-  - name: wine-gecko
-    buildsystem: simple
-    build-commands:
-      - mkdir -p ${FLATPAK_DEST}/share/wine/gecko/
-      - install -v -Dm755 *.msi -t ${FLATPAK_DEST}/share/wine/gecko/
-    sources:
-      - type: file
-        only-arches:
-          - i386
-          - x86_64
-        url: https://dl.winehq.org/wine/wine-gecko/2.47.4/wine-gecko-2.47.4-x86.msi
-        sha256: 26cecc47706b091908f7f814bddb074c61beb8063318e9efc5a7f789857793d6
-        x-checker-data:
-          type: html
-          url: &wine-addons-url >-
-            https://source.winehq.org/git/wine.git/blob_plain/refs/heads/stable:/dlls/appwiz.cpl/addons.c
-          version-pattern: &wine-gecko-version-pattern >-
-            GECKO_VERSION\s+"(\d[\d\.]+\d)"
-          url-template: https://dl.winehq.org/wine/wine-gecko/$version/wine-gecko-$version-x86.msi
-      - type: file
-        only-arches:
-          - x86_64
-        url: https://dl.winehq.org/wine/wine-gecko/2.47.4/wine-gecko-2.47.4-x86_64.msi
-        sha256: e590b7d988a32d6aa4cf1d8aa3aa3d33766fdd4cf4c89c2dcc2095ecb28d066f
-        x-checker-data:
-          type: html
-          url: *wine-addons-url
-          version-pattern: *wine-gecko-version-pattern
-          url-template: https://dl.winehq.org/wine/wine-gecko/$version/wine-gecko-$version-x86_64.msi
-
-  - name: wine-mono
-    buildsystem: simple
-    build-commands:
-      - mkdir -p ${FLATPAK_DEST}/share/wine/mono/
-      - cp -a wine-mono-* ${FLATPAK_DEST}/share/wine/mono/
-    sources:
-      - type: archive
-        url: https://dl.winehq.org/wine/wine-mono/8.1.0/wine-mono-8.1.0-x86.tar.xz
-        strip-components: 0
-        sha256: 4e3e8a40729e4c9e3e9e651cebe4f1aed8f9a4d22e991e6cd24608687f0eedd4
-        x-checker-data:
-          type: html
-          url: *wine-addons-url
-          version-pattern: MONO_VERSION\s+"(\d[\d\.]+\d)"
-          url-template: https://dl.winehq.org/wine/wine-mono/$version/wine-mono-$version-x86.tar.xz
-
   - name: hwdata
     config-opts:
       - --datarootdir=/app/share
     sources:
       - type: git
         url: https://github.com/vcrhonek/hwdata
-        tag: v0.381
-        commit: 4463530857af32d9dbfcfa9939c2304b51e5e58d
+        tag: v0.406
+        commit: 9ae3b9da5cbb93eed30f812aa7edb4b9ad3e3868
         x-checker-data:
           type: json
           url: https://api.github.com/repos/vcrhonek/hwdata/releases/latest
           tag-query: .tag_name
 
-  - name: eudev
-    cleanup:
-      - /bin
-      - /sbin
-      - /lib*/udev
-    post-install:
-      - udevadm hwdb --update --usr
-    sources: &eudev_sources
-      - type: archive
-        url: https://github.com/eudev-project/eudev/releases/download/v3.2.14/eudev-3.2.14.tar.gz
-        sha256: 8da4319102f24abbf7fff5ce9c416af848df163b29590e666d334cc1927f006f
-        x-checker-data:
-          type: json
-          url: https://api.github.com/repos/gentoo/eudev/releases/latest
-          tag-query: .tag_name
-          version-query: $tag | sub("^[vV]"; "")
-          timestamp-query: .published_at
-          url-query: .assets[] | select(.name=="eudev-\($version).tar.gz") | .browser_download_url
-
-  - name: libusb
-    sources: &libusb_sources
-      - type: archive
-        url: https://github.com/libusb/libusb/releases/download/v1.0.27/libusb-1.0.27.tar.bz2
-        sha256: ffaa41d741a8a3bee244ac8e54a72ea05bf2879663c098c82fc5757853441575
-        x-checker-data:
-          type: json
-          url: https://api.github.com/repos/libusb/libusb/releases/latest
-          tag-query: .tag_name
-          version-query: $tag | sub("^[vV]"; "")
-          timestamp-query: .published_at
-          url-query: .assets[] | select(.name=="libusb-\($version).tar.bz2") | .browser_download_url
-
-  - name: eudev-32bit
-    build-options:
-      arch:
-        x86_64: *compat_i386_opts
-    cleanup:
-      - /bin
-      - /sbin
-      - /lib*/udev
-    sources: *eudev_sources
-
-  - name: libusb-32bit
-    build-options:
-      arch:
-        x86_64: *compat_i386_opts
-      ldflags: -L/app/lib32 -Wl,-z,relro,-z,now -Wl,--as-needed
-      ldflags-override: true
-    sources: *libusb_sources
-
   - name: usbutils
-    config-opts:
-      - --datadir=/app/share/hwdata
+    buildsystem: meson
     sources:
       - type: git
         url: https://github.com/gregkh/usbutils
-        commit: 23077bf82534baad8adfe33ce4c02b5fb087eb86
-        tag: v017
+        commit: d0c76b601b4b3ab9b2ab2647d604a8e3cce6d666
+        tag: v019
         x-checker-data:
           type: anitya
           project-id: 5061
           stable-only: true
           tag-template: v$version
-
-  - name: lsof
-    buildsystem: simple
-    build-commands:
-      - ./Configure -n linux
-      - make CC="cc ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
-      - install -Dm755 lsof -t /app/bin
-    sources:
-      - type: git
-        url: https://github.com/lsof-org/lsof
-        commit: 2e4c7a1a9bc7258dc5b6a3ab28ebca44174279a8
-        tag: 4.99.3
-        x-checker-data:
-          type: json
-          url: https://api.github.com/repos/lsof-org/lsof/releases/latest
-          tag-query: .tag_name
 
   - name: platform-bootstrap
     buildsystem: simple
@@ -539,33 +289,35 @@ modules:
         set -e
         mkdir -p /app/bin
         mkdir -p /app/utils
-        mkdir -p /app/lib/ffmpeg
-        mkdir -p /app/lib32/ffmpeg
         mkdir -p /app/lib/i386-linux-gnu
         mkdir -p /app/lib/i386-linux-gnu/GL
         mkdir -p /app/lib/debug/lib/i386-linux-gnu
         mkdir -p /app/lib/debug/lib/i386-linux-gnu/GL
         mkdir -p /app/lib/i386-linux-gnu/dri/intel-vaapi-driver
+        mkdir -p /app/i386/nvidia-vaapi-driver
+        mkdir -p /app/lib/i386-linux-gnu/codecs-extra
+        mkdir -p /app/share/vulkan/implicit_layer.d/
         install -Dm644 -t /app/etc ld.so.conf
+        install -Dm755 pyside_cleanup.sh ${FLATPAK_DEST}/pyside_cleanup.sh
     sources:
       - type: inline
         dest-filename: ld.so.conf
         contents: |
           /app/lib32
           /app/lib/i386-linux-gnu
-
-  - name: PortProton
-    buildsystem: simple
-    build-commands:
-      - |
-        set -e
-        install -Dm644 ru.linux_gaming.PortProton.svg /app/share/icons/hicolor/scalable/apps/ru.linux_gaming.PortProton.svg
-        install -Dm644 ru.linux_gaming.PortProton.desktop /app/share/applications/ru.linux_gaming.PortProton.desktop
-        install -Dm644 ru.linux_gaming.PortProton.metainfo.xml /app/share/metainfo/ru.linux_gaming.PortProton.metainfo.xml
-        install -D portproton -t /app/bin
-    sources:
-      - type: archive
-        url: https://github.com/Castro-Fidel/PortProton_ALT/archive/refs/tags/v1.5.2.tar.gz
-        sha256: 17926ec48ccd462bc8153b2edf696710624221c27c5f67dfe1142f72987cfd5b
       - type: file
-        path: portproton
+        path: pyside_cleanup.sh
+
+  - name: PortProtonQt
+    buildsystem: meson
+    sources:
+      - type: git
+        url: https://git.linux-gaming.ru/Linux-Gaming/PortProtonQt.git
+        tag: 'v1.2.0'
+        commit: 4d6f6c1b82de86199636ec0fc74e64f703e3373e
+        x-checker-data:
+          type: git
+          is-main-source: true
+          tag-pattern: ^v(\d+\.\d+\.\d+)$
+      - type: patch
+        path: patches/0001-feat-implement-XDG-Desktop-Portal-notification-fallback.patch
