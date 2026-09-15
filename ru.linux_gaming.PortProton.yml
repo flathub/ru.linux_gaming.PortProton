@@ -261,8 +261,8 @@ modules:
     buildsystem: autotools
     sources:
       - type: archive
-        url: https://xorg.freedesktop.org/releases/individual/app/xrdb-1.2.2.tar.gz
-        sha256: db2d774a35ae2f7e7ac61cc2de0dcae27fc2aa14399c35721f8300e63ea73549
+        url: https://xorg.freedesktop.org/releases/individual/app/xrdb-1.2.3.tar.gz
+        sha256: 89c3d0a5ee77e3f1b25a3a63cce2a322fe899acb061ed8e0bab6920189b61edd
         x-checker-data:
           type: anitya
           project-id: 14956
@@ -285,8 +285,8 @@ modules:
       - --disable-full-tgetent
     sources:
       - type: archive
-        url: https://invisible-mirror.net/archives/xterm/xterm-410.tgz
-        sha256: 7ba9fbb303dd3d95d06ca24360d019048d84e5822dc6fe722cd77369bdbf231f
+        url: https://invisible-mirror.net/archives/xterm/xterm-411.tgz
+        sha256: 969be283670deadd66934865c4de6c5ab045e3a3facc2b228decf91a20d8c36c
         x-checker-data:
           type: anitya
           project-id: 5272
@@ -413,8 +413,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/vcrhonek/hwdata
-        tag: v0.409
-        commit: 73fa04de426aefe192505fcbc6c24237a9fd9c9b
+        tag: v0.411
+        commit: 7fc63d411377e40aab66bfbf77dce6a439c3fe87
         x-checker-data:
           type: json
           url: https://api.github.com/repos/vcrhonek/hwdata/releases/latest
